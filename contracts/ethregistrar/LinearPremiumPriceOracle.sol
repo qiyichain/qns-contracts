@@ -20,7 +20,7 @@ contract LinearPremiumPriceOracle is StablePriceOracle {
         uint256[] memory _rentPrices,
         uint256 _initialPremium,
         uint256 _premiumDecreaseRate
-    ) public StablePriceOracle(_usdOracle, _rentPrices) {
+    )  StablePriceOracle(_usdOracle, _rentPrices) {
         initialPremium = _initialPremium;
         premiumDecreaseRate = _premiumDecreaseRate;
     }

@@ -195,7 +195,7 @@ contract BaseRegistrarImplementation is ERC721, IBaseRegistrar, Ownable {
 
     function supportsInterface(bytes4 interfaceID)
         public
-        view
+        pure
         override(ERC721, IERC165)
         returns (bool)
     {

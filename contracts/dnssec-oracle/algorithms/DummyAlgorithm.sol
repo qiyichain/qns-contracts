@@ -12,7 +12,7 @@ contract DummyAlgorithm is Algorithm {
         bytes calldata,
         bytes calldata,
         bytes calldata
-    ) external view override returns (bool) {
+    ) external pure override returns (bool) {
         return true;
     }
 }

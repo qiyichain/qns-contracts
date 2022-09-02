@@ -16,7 +16,7 @@ contract Root is Ownable, Controllable {
     ENS public ens;
     mapping(bytes32 => bool) public locked;
 
-    constructor(ENS _ens) public {
+    constructor(ENS _ens)  {
         ens = _ens;
     }
 

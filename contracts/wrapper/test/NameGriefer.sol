@@ -51,13 +51,13 @@ contract NameGriefer is IERC1155Receiver {
         uint256[] calldata,
         uint256[] calldata,
         bytes calldata
-    ) external override returns (bytes4) {
+    ) external override pure returns (bytes4) {
         return NameGriefer.onERC1155BatchReceived.selector;
     }
 
     function supportsInterface(bytes4 interfaceID)
         external
-        view
+        pure
         override
         returns (bool)
     {

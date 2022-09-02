@@ -12,7 +12,7 @@ contract TLDPublicSuffixList is PublicSuffixList {
 
     function isPublicSuffix(bytes calldata name)
         external
-        view
+        pure 
         override
         returns (bool)
     {

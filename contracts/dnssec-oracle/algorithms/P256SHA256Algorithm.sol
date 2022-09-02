@@ -19,7 +19,7 @@ contract P256SHA256Algorithm is Algorithm, EllipticCurve {
         bytes calldata key,
         bytes calldata data,
         bytes calldata signature
-    ) external view override returns (bool) {
+    ) external pure override returns (bool) {
         return
             validateSignature(
                 sha256(data),
