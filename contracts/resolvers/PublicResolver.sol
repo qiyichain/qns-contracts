@@ -31,10 +31,10 @@ contract PublicResolver is
     PubkeyResolver,
     TextResolver
 {
-    ENS immutable ens;
+    ENS immutable qns;
     INameWrapper immutable nameWrapper;
-    address immutable trustedETHController;
-    address immutable trustedReverseRegistrar;
+    // address immutable trustedETHController;
+    // address immutable trustedReverseRegistrar;
 
     /**
      * A mapping of operators. An address that is authorised for an address
@@ -52,15 +52,11 @@ contract PublicResolver is
     );
 
     constructor(
-        ENS _ens,
-        INameWrapper wrapperAddress,
-        address _trustedETHController,
-        address _trustedReverseRegistrar
+        ENS _qns,
+        INameWrapper wrapperAddress
     ) {
-        ens = _ens;
+        qns = _qns;
         nameWrapper = wrapperAddress;
-        trustedETHController = _trustedETHController;
-        trustedReverseRegistrar = _trustedReverseRegistrar;
     }
 
     /**
@@ -88,13 +84,7 @@ contract PublicResolver is
     }
 
     function isAuthorised(bytes32 node) internal view override returns (bool) {
-        if (
-            msg.sender == trustedETHController ||
-            msg.sender == trustedReverseRegistrar
-        ) {
-            return true;
-        }
-        address owner = ens.owner(node);
+        address owner = qns.owner(node);
         if (owner == address(nameWrapper)) {
             owner = nameWrapper.ownerOf(uint256(node));
         }
@@ -117,6 +107,6 @@ contract PublicResolver is
         )
         returns (bool)
     {
-        return super.supportsInterface(interfaceID);
+        return interfaceID == type(IMulticallable).interfaceId || super.supportsInterface(interfaceID);
     }
 }
