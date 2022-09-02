@@ -5,9 +5,7 @@ import "./BaseRegistrarImplementation.sol";
 import "./StringUtils.sol";
 import "../resolvers/Resolver.sol";
 import "../registry/ReverseRegistrar.sol";
-// import "./IETHRegistrarController.sol";
 
-import "./IPriceOracle.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
@@ -49,11 +47,10 @@ contract ETHRegistrarController is Ownable  {
 
 
     BaseRegistrarImplementation immutable base;
-    // IPriceOracle public immutable prices;
     uint256 public immutable minCommitmentAge;
     uint256 public immutable maxCommitmentAge;
-    ReverseRegistrar public immutable reverseRegistrar;
-    INameWrapper public immutable nameWrapper;
+    // ReverseRegistrar public immutable reverseRegistrar;
+    // INameWrapper public immutable nameWrapper;
 
     mapping(bytes32 => uint256) public commitments;
 
@@ -74,20 +71,14 @@ contract ETHRegistrarController is Ownable  {
 
     constructor(
         BaseRegistrarImplementation _base,
-        // IPriceOracle _prices,
         uint256 _minCommitmentAge,
-        uint256 _maxCommitmentAge,
-        ReverseRegistrar _reverseRegistrar,
-        INameWrapper _nameWrapper
+        uint256 _maxCommitmentAge
     ) {
         require(_maxCommitmentAge > _minCommitmentAge);
 
         base = _base;
-        // prices = _prices;
         minCommitmentAge = _minCommitmentAge;
         maxCommitmentAge = _maxCommitmentAge;
-        reverseRegistrar = _reverseRegistrar;
-        nameWrapper = _nameWrapper;
     }
 
 
@@ -182,39 +173,47 @@ contract ETHRegistrarController is Ownable  {
         uint256 tokenId = uint256(label);
 
         uint256 expires;
-        // if (resolver != address(0)) {
-            // Set this contract as the (temporary) owner, giving it
-            // permission to set up the resolver.
-            expires = base.register(tokenId, address(this), duration);
+        // Set this contract as the (temporary) owner, giving it
+        // permission to set up the resolver.
+        expires = base.register(tokenId, address(this), duration);
 
-            // The nodehash of this label
-            bytes32 nodehash = keccak256(
-                abi.encodePacked(base.baseNode(), label)
-            );
+        // The nodehash of this label
+        bytes32 nodehash = keccak256(
+            abi.encodePacked(base.baseNode(), label)
+        );
 
-            // Set the resolver
-            base.ens().setResolver(nodehash, resolver);
+        // Set the resolver
+        base.ens().setResolver(nodehash, resolver);
 
-            // Configure the resolver
-            if (addr != address(0)) {
-                Resolver(resolver).setAddr(nodehash, addr);
-            }
+        // Configure the resolver
+        if (addr != address(0)) {
+            Resolver(resolver).setAddr(nodehash, addr);
+        }
 
-            // Now transfer full ownership to the expeceted owner
-            base.reclaim(tokenId, owner);
-            base.transferFrom(address(this), owner, tokenId);
-        // } 
-        // else {
-        //     require(addr == address(0));
-        //     expires = base.register(tokenId, owner, duration);
-        // }
-
+        // Now transfer full ownership to the expeceted owner
+        base.reclaim(tokenId, owner);
+        base.transferFrom(address(this), owner, tokenId);
         emit NameRegistered(name, label, owner, cost, expires);
 
         // Refund any extra payment
-        // if (msg.value > cost) {
-        //     payable(msg.sender).transfer(msg.value - cost);
-        // }
+        if (msg.value > cost) {
+            payable(msg.sender).transfer(msg.value - cost);
+        }
+    }
+
+    function makeCommitment(
+        string memory name,
+        address owner,
+        bytes32 secret
+    ) public pure returns (bytes32) {
+        return
+            makeCommitmentWithConfig(
+                name,
+                owner,
+                secret,
+                address(0),
+                address(0)
+            );
     }
 
     function makeCommitmentWithConfig(
