@@ -4,6 +4,8 @@
   "description": "ENS contracts",
   "scripts": {
     "test": "hardhat test",
+    "clean": "yarn run hardhat clean",
+    "compile": "yarn run hardhat compile",
     "test:local": "hardhat --network localhost test",
     "lint": "hardhat check",
     "build": "rm -rf ./build/deploy ./build/hardhat.config.js && hardhat compile && tsc",

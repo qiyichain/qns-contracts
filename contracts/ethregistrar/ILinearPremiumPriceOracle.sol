@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 interface ILinearPremiumPriceOracle {
     function timeUntilPremium(uint256 expires, uint256 amount)
         external
