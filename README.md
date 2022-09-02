@@ -1,8 +1,8 @@
-# ENS
+# QNS
 
-[![Build Status](https://travis-ci.org/ensdomains/ens-contracts.svg?branch=master)](https://travis-ci.org/ensdomains/ens-contracts)
+**QNS(Qiyichain Name Service) is fork of ENS.**
 
-For documentation of the ENS system, see [docs.ens.domains](https://docs.ens.domains/).
+For documentation of the QNS system, see [docs.ens.domains](https://docs.ens.domains/).
 
 ## npm package
 
@@ -25,35 +25,35 @@ import {
   ReverseRegistrar,
   StablePriceOracle,
   TestRegistrar
-} from '@ensdomains/ens-contracts'
+} from '@qiyichain/qns-contracts'
 ```
 
 ## Importing from solidity
 
 ```
 // Registry
-import '@ensdomains/ens-contracts/contracts/registry/ENS.sol';
-import '@ensdomains/ens-contracts/contracts/registry/ENSRegistry.sol';
-import '@ensdomains/ens-contracts/contracts/registry/ENSRegistryWithFallback.sol';
-import '@ensdomains/ens-contracts/contracts/registry/ReverseRegistrar.sol';
-import '@ensdomains/ens-contracts/contracts/registry/TestRegistrar.sol';
+import '@qiyichain/qns-contracts/contracts/registry/ENS.sol';
+import '@qiyichain/qns-contracts/contracts/registry/ENSRegistry.sol';
+import '@qiyichain/qns-contracts/contracts/registry/ENSRegistryWithFallback.sol';
+import '@qiyichain/qns-contracts/contracts/registry/ReverseRegistrar.sol';
+import '@qiyichain/qns-contracts/contracts/registry/TestRegistrar.sol';
 // EthRegistrar
-import '@ensdomains/ens-contracts/contracts/ethregistrar/BaseRegistrar.sol';
-import '@ensdomains/ens-contracts/contracts/ethregistrar/BaseRegistrarImplementation.sol';
-import '@ensdomains/ens-contracts/contracts/ethregistrar/BulkRenewal.sol';
-import '@ensdomains/ens-contracts/contracts/ethregistrar/BaseRegistrar.sol';
-import '@ensdomains/ens-contracts/contracts/ethregistrar/ETHRegistrarController.sol';
-import '@ensdomains/ens-contracts/contracts/ethregistrar/LinearPremiumPriceOracle.sol';
-import '@ensdomains/ens-contracts/contracts/ethregistrar/PriceOracle.sol';
-import '@ensdomains/ens-contracts/contracts/ethregistrar/StablePriceOracle.sol';
+import '@qiyichain/qns-contracts/contracts/ethregistrar/BaseRegistrar.sol';
+import '@qiyichain/qns-contracts/contracts/ethregistrar/BaseRegistrarImplementation.sol';
+import '@qiyichain/qns-contracts/contracts/ethregistrar/BulkRenewal.sol';
+import '@qiyichain/qns-contracts/contracts/ethregistrar/BaseRegistrar.sol';
+import '@qiyichain/qns-contracts/contracts/ethregistrar/ETHRegistrarController.sol';
+import '@qiyichain/qns-contracts/contracts/ethregistrar/LinearPremiumPriceOracle.sol';
+import '@qiyichain/qns-contracts/contracts/ethregistrar/PriceOracle.sol';
+import '@qiyichain/qns-contracts/contracts/ethregistrar/StablePriceOracle.sol';
 // Resolvers
-import '@ensdomains/ens-contracts/contracts/resolvers/PublicResolver.sol';
-import '@ensdomains/ens-contracts/contracts/resolvers/Resolver.sol';
+import '@qiyichain/qns-contracts/contracts/resolvers/PublicResolver.sol';
+import '@qiyichain/qns-contracts/contracts/resolvers/Resolver.sol';
 ```
 
 ##  Accessing to binary file.
 
-If your environment does not have compiler, you can access to the raw hardhat artifacts files at `node_modules/@ensdomains/ens-contracts/artifacts/contracts/${modName}/${contractName}.sol/${contractName}.json`
+If your environment does not have compiler, you can access to the raw hardhat artifacts files at `node_modules/@qiyichain/qns-contracts/artifacts/contracts/${modName}/${contractName}.sol/${contractName}.json`
 
 
 ## Contracts
@@ -90,7 +90,7 @@ Implementation of the `.test` registrar facilitates easy testing of ENS on the E
 
 ## EthRegistrar
 
-Implements an [ENS](https://ens.domains/) registrar intended for the .eth TLD.
+Implements an [QNS](https://ens.domains/) registrar intended for the .eth TLD.
 
 These contracts were audited by ConsenSys dilligence; the audit report is available [here](https://github.com/ConsenSys/ens-audit-report-2019-02).
 
@@ -150,7 +150,7 @@ PublicResolver includes the following profiles that implements different EIPs.
 ### How to setup
 
 ```
-git clone https://github.com/ensdomains/ens-contracts
+git clone https://github.com/qiyichain/qns-contracts
 cd ens-contracts
 yarn
 ```
