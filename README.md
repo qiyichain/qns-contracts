@@ -1,172 +1,103 @@
-# QNS
+# ENS
 
-**QNS(Qiyichain Name Service) is fork of ENS.**
+[![Build Status](https://travis-ci.org/ensdomains/ens.svg?branch=master)](https://travis-ci.org/ensdomains/ens)
 
-For documentation of the QNS system, see [docs.ens.domains](https://docs.ens.domains/).
+Implementations for registrars and local resolvers for the Ethereum Name Service.
 
-## npm package
+For documentation of the ENS system, see [docs.ens.domains](https://docs.ens.domains/).
+
+To run unit tests, clone this repository, and run:
+
+    $ npm install
+    $ npm test
+
+# npm package
 
 This repo doubles as an npm package with the compiled JSON contracts
 
 ```js
 import {
-  BaseRegistrar,
-  BaseRegistrarImplementation,
-  BulkRenewal,
+  Deed,
+  DeedImplementation,
   ENS,
   ENSRegistry,
-  ENSRegistryWithFallback,
-  ETHRegistrarController,
   FIFSRegistrar,
-  LinearPremiumPriceOracle,
-  PriceOracle,
-  PublicResolver,
-  Resolver,
+  Migrations,
+  Registrar,
   ReverseRegistrar,
-  StablePriceOracle,
   TestRegistrar
-} from '@qiyichain/qns-contracts'
+} from '@ensdomains/ens'
 ```
 
-## Importing from solidity
-
-```
-// Registry
-import '@qiyichain/qns-contracts/contracts/registry/ENS.sol';
-import '@qiyichain/qns-contracts/contracts/registry/ENSRegistry.sol';
-import '@qiyichain/qns-contracts/contracts/registry/ENSRegistryWithFallback.sol';
-import '@qiyichain/qns-contracts/contracts/registry/ReverseRegistrar.sol';
-import '@qiyichain/qns-contracts/contracts/registry/TestRegistrar.sol';
-// EthRegistrar
-import '@qiyichain/qns-contracts/contracts/ethregistrar/BaseRegistrar.sol';
-import '@qiyichain/qns-contracts/contracts/ethregistrar/BaseRegistrarImplementation.sol';
-import '@qiyichain/qns-contracts/contracts/ethregistrar/BulkRenewal.sol';
-import '@qiyichain/qns-contracts/contracts/ethregistrar/BaseRegistrar.sol';
-import '@qiyichain/qns-contracts/contracts/ethregistrar/ETHRegistrarController.sol';
-import '@qiyichain/qns-contracts/contracts/ethregistrar/LinearPremiumPriceOracle.sol';
-import '@qiyichain/qns-contracts/contracts/ethregistrar/PriceOracle.sol';
-import '@qiyichain/qns-contracts/contracts/ethregistrar/StablePriceOracle.sol';
-// Resolvers
-import '@qiyichain/qns-contracts/contracts/resolvers/PublicResolver.sol';
-import '@qiyichain/qns-contracts/contracts/resolvers/Resolver.sol';
-```
-
-##  Accessing to binary file.
-
-If your environment does not have compiler, you can access to the raw hardhat artifacts files at `node_modules/@qiyichain/qns-contracts/artifacts/contracts/${modName}/${contractName}.sol/${contractName}.json`
-
-
-## Contracts
-
-## Registry
-
-The ENS registry is the core contract that lies at the heart of ENS resolution. All ENS lookups start by querying the registry. The registry maintains a list of domains, recording the owner, resolver, and TTL for each, and allows the owner of a domain to make changes to that data. It also includes some generic registrars.
-
-### ENS.sol
-
-Interface of the ENS Registry.
-
-### ENSRegistry
+## ENSRegistry.sol
 
 Implementation of the ENS Registry, the central contract used to look up resolvers and owners for domains.
 
-### ENSRegistryWithFallback
-
-The new impelmentation of the ENS Registry after [the 2020 ENS Registry Migration](https://docs.ens.domains/ens-migration-february-2020/technical-description#new-ens-deployment).
-
-### FIFSRegistrar
+## FIFSRegistrar.sol
 
 Implementation of a simple first-in-first-served registrar, which issues (sub-)domains to the first account to request them.
 
-### ReverseRegistrar
+# ENS Registry interface
 
-Implementation of the reverse registrar responsible for managing reverse resolution via the .addr.reverse special-purpose TLD.
+The ENS registry is a single central contract that provides a mapping from domain names to owners and resolvers, as described in [EIP 137](https://github.com/ethereum/EIPs/issues/137).
 
+The ENS operates on 'nodes' instead of human-readable names; a human readable name is converted to a node using the namehash algorithm, which is as follows:
 
-### TestRegistrar
+    def namehash(name):
+      if name == '':
+        return '\0' * 32
+      else:
+        label, _, remainder = name.partition('.')
+        return sha3(namehash(remainder) + sha3(label))
 
-Implementation of the `.test` registrar facilitates easy testing of ENS on the Ethereum test networks. Currently deployed on Ropsten network, it provides functionality to instantly claim a domain for test purposes, which expires 28 days after it was claimed.
+The registry's interface is as follows:
 
+## owner(bytes32 node) constant returns (address)
 
-## EthRegistrar
+Returns the owner of the specified node.
 
-Implements an [QNS](https://ens.domains/) registrar intended for the .eth TLD.
+## resolver(bytes32 node) constant returns (address)
 
-These contracts were audited by ConsenSys dilligence; the audit report is available [here](https://github.com/ConsenSys/ens-audit-report-2019-02).
+Returns the resolver for the specified node.
 
-### BaseRegistrar
+## setOwner(bytes32 node, address owner)
 
-BaseRegistrar is the contract that owns the TLD in the ENS registry. This contract implements a minimal set of functionality:
+Updates the owner of a node. Only the current owner may call this function.
 
- - The owner of the registrar may add and remove controllers.
- - Controllers may register new domains and extend the expiry of (renew) existing domains. They can not change the ownership or reduce the expiration time of existing domains.
- - Name owners may transfer ownership to another address.
- - Name owners may reclaim ownership in the ENS registry if they have lost it.
- - Owners of names in the interim registrar may transfer them to the new registrar, during the 1 year transition period. When they do so, their deposit is returned to them in its entirety.
+## setSubnodeOwner(bytes32 node, bytes32 label, address owner)
 
-This separation of concerns provides name owners strong guarantees over continued ownership of their existing names, while still permitting innovation and change in the way names are registered and renewed via the controller mechanism.
+Updates the owner of a subnode. For instance, the owner of "foo.com" may change the owner of "bar.foo.com" by calling `setSubnodeOwner(namehash("foo.com"), sha3("bar"), newowner)`. Only callable by the owner of `node`.
 
-### EthRegistrarController
+## setResolver(bytes32 node, address resolver)
 
-EthRegistrarController is the first implementation of a registration controller for the new registrar. This contract implements the following functionality:
+Sets the resolver address for the specified node.
 
- - The owner of the registrar may set a price oracle contract, which determines the cost of registrations and renewals based on the name and the desired registration or renewal duration.
- - The owner of the registrar may withdraw any collected funds to their account.
- - Users can register new names using a commit/reveal process and by paying the appropriate registration fee.
- - Users can renew a name by paying the appropriate fee. Any user may renew a domain, not just the name's owner.
+# Resolvers
 
-The commit/reveal process is used to avoid frontrunning, and operates as follows:
+Resolvers can be found in the resolver specific [repository](https://github.com/ensdomains/resolvers).
 
- 1. A user commits to a hash, the preimage of which contains the name to be registered and a secret value.
- 2. After a minimum delay period and before the commitment expires, the user calls the register function with the name to register and the secret value from the commitment. If a valid commitment is found and the other preconditions are met, the name is registered.
+# Generating LLL ABI and binary data
 
-The minimum delay and expiry for commitments exist to prevent miners or other users from effectively frontrunnig registrations.
+ENS.lll.bin was generated with the following command, using the lllc packaged with Solidity 0.4.4:
 
-### SimplePriceOracle
+    $ lllc ENS.lll > ENS.lll.bin
 
-SimplePriceOracle is a trivial implementation of the pricing oracle for the EthRegistrarController that always returns a fixed price per domain per year, determined by the contract owner.
+The files in the abi directory were generated with the following command:
 
-### StablePriceOracle
+    $ solc --abi -o abi AbstractENS.sol FIFSRegistrar.sol HashRegistrarSimplified.sol
 
-StablePriceOracle is a price oracle implementation that allows the contract owner to specify pricing based on the length of a name, and uses a fiat currency oracle to set a fixed price in fiat per name.
+# Getting started
 
-## Resolvers
+Install Truffle
 
-Resolver implements a general-purpose ENS resolver that is suitable for most standard ENS use-cases. The public resolver permits updates to ENS records by the owner of the corresponding name.
+    $ npm install -g truffle
 
-PublicResolver includes the following profiles that implements different EIPs.
+Launch the RPC client, for example TestRPC:
 
-- ABIResolver = EIP 205 - ABI support (`ABI()`).
-- AddrResolver = EIP 137 - Contract address interface. EIP 2304 - Multicoin support (`addr()`).
-- ContentHashResolver = EIP 1577 - Content hash support (`contenthash()`).
-- InterfaceResolver = EIP 165 - Interface Detection (`supportsInterface()`).
-- NameResolver = EIP 181 - Reverse resolution (`name()`).
-- PubkeyResolver = EIP 619 - SECP256k1 public keys (`pubkey()`).
-- TextResolver = EIP 634 - Text records (`text()`).
-- DNSResolver = Experimental support is available for hosting DNS domains on the Ethereum blockchain via ENS. [The more detail](https://veox-ens.readthedocs.io/en/latest/dns.html) is on the old ENS doc.
+    $ testrpc
 
-## Developer guide
+Deploy `ENS` and `FIFSRegistrar` to the private network, the deployment process is defined at [here](migrations/2_deploy_contracts.js):
 
-### How to setup
+    $ truffle migrate --network dev.fifs
 
-```
-git clone https://github.com/qiyichain/qns-contracts
-cd ens-contracts
-yarn
-```
-
-### How to run tests
-
-```
-yarn test
-```
-
-### How to publish
-
-```
-yarn pub
-```
-
-### Release flow
-
-Smart contract development tends to take a long release cycle. To prevent unnecesarily dependency conflicts, please create a feature branch (`features/$BRNACH_NAME`) and raise a PR against the feature branch. The feature branch must be merged into master only after the smart contracts are deployed to the Ethereum mainnet.
+Check the truffle [documentation](http://truffleframework.com/docs/) for more information.
