@@ -84,13 +84,13 @@ contract ETHRegistrarController is Ownable  {
 
     function rentPrice(string memory name, uint256 duration)
         public
-        view
+        pure
         returns (uint256)
     {
         // bytes32 label = keccak256(bytes(name));
         // price = prices.price(name, base.nameExpires(uint256(label)), duration);
 
-        // 2022-09-02(yqq), set retPrice as 1 ether, 
+        // 2022-09-02(yqq), set retPrice as 1 ether,
         // so that only B-end address could call regiest method with payment
         return 1 ether;
     }
@@ -104,7 +104,7 @@ contract ETHRegistrarController is Ownable  {
         return true;
     }
 
-    // 2022-09-02(yqq): disable 
+    // 2022-09-02(yqq): disable
     function exists(bytes1 char) public pure returns (bool) {
         bytes memory charsets = bytes("abcdefghigklmnopqrstuvwxyz-0123456789");
         for (uint256 i = 0; i < charsets.length; i++) {

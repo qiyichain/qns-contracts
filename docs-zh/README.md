@@ -2,7 +2,7 @@
 
 ## ENSRegistry.sol 合约部署
 
-合约地址：`0x4446524AEA93Af89F62F49463A6770D4AaB3c40C`
+合约地址：`0xd184b5dd3A735942188dfc11D174CbD008ed9bc6`
 
 
 

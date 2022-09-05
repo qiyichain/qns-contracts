@@ -12,3 +12,8 @@ test:clean
 clean:
 	yarn clean
 	rm -rf cache
+
+
+.PHONY:remix
+remix:
+	remixd -s ./ -u https://remix.ethereum.org
