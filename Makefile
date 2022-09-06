@@ -1,7 +1,7 @@
 all: compile
 
 .PHONY:compile
-compile: clean
+compile:
 	yarn compile
 
 .PHONY:test

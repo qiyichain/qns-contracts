@@ -6,7 +6,8 @@
     "test": "truffle test",
     "lint": "solium --dir ./contracts",
     "prepublishOnly": "truffle compile && truffle networks --clean",
-    "pub": "npm run prepublishOnly && npm publish"
+    "pub": "npm run prepublishOnly && npm publish",
+    "compile": "truffle compile"
   },
   "main": "index.js",
   "repository": {
