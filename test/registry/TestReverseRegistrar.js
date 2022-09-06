@@ -29,12 +29,12 @@ contract('ReverseRegistrar', function(accounts) {
     node2 = getReverseNode(accounts[1])
     node3 = getReverseNode(accounts[2])
     ens = await ENS.new()
-    nameWrapper = await NameWrapper.new()
+    // nameWrapper = await NameWrapper.new()
 
     registrar = await ReverseRegistrar.new(ens.address)
     resolver = await PublicResolver.new(
       ens.address,
-      nameWrapper.address,
+      '0x0000000000000000000000000000000000000000',
       '0x0000000000000000000000000000000000000000',
       registrar.address
     )

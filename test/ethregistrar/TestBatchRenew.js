@@ -31,11 +31,11 @@ contract('BulkRenewal', function(accounts) {
   before(async () => {
     // Create a registry
     ens = await ENS.new()
-    nameWrapper = await NameWrapper.new()
+    // nameWrapper = await NameWrapper.new()
     // Create a public resolver
     resolver = await PublicResolver.new(
       ens.address,
-      nameWrapper.address,
+      EMPTY_ADDRESS,
       EMPTY_ADDRESS,
       EMPTY_ADDRESS
     )
