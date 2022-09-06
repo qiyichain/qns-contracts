@@ -23,7 +23,7 @@
   "dependencies": {
     "bluebird": "^3.5.2",
     "eth-ens-namehash": "^2.0.8",
-    "solc": "^0.4.20",
+    "solc": "^0.7.0",
     "testrpc": "0.0.1"
   },
   "devDependencies": {

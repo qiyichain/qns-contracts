@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.7.0;
 
 import "./ENS.sol";
@@ -18,7 +19,7 @@ contract ReverseRegistrar {
      * @param ensAddr The address of the ENS registry.
      * @param resolverAddr The address of the default reverse resolver.
      */
-    constructor(ENS ensAddr, NameResolver resolverAddr) public {
+    constructor(ENS ensAddr, NameResolver resolverAddr)  {
         ens = ensAddr;
         defaultResolver = resolverAddr;
 
@@ -48,17 +49,17 @@ contract ReverseRegistrar {
      */
     function claimWithResolver(address owner, address resolver) public returns (bytes32) {
         bytes32 label = sha3HexAddress(msg.sender);
-        bytes32 node = keccak256(abi.encodePacked(ADDR_REVERSE_NODE, label));
-        address currentOwner = ens.owner(node);
+        bytes32 _node = keccak256(abi.encodePacked(ADDR_REVERSE_NODE, label));
+        address currentOwner = ens.owner(_node);
 
         // Update the resolver if required
-        if (resolver != address(0x0) && resolver != ens.resolver(node)) {
+        if (resolver != address(0x0) && resolver != ens.resolver(_node)) {
             // Transfer the name to us first if it's not already
             if (currentOwner != address(this)) {
                 ens.setSubnodeOwner(ADDR_REVERSE_NODE, label, address(this));
                 currentOwner = address(this);
             }
-            ens.setResolver(node, resolver);
+            ens.setResolver(_node, resolver);
         }
 
         // Update the owner if required
@@ -66,7 +67,7 @@ contract ReverseRegistrar {
             ens.setSubnodeOwner(ADDR_REVERSE_NODE, label, owner);
         }
 
-        return node;
+        return _node;
     }
 
     /**
@@ -77,9 +78,9 @@ contract ReverseRegistrar {
      * @return The ENS node hash of the reverse record.
      */
     function setName(string memory name) public returns (bytes32) {
-        bytes32 node = claimWithResolver(address(this), address(defaultResolver));
-        defaultResolver.setName(node, name);
-        return node;
+        bytes32 _node = claimWithResolver(address(this), address(defaultResolver));
+        defaultResolver.setName(_node, name);
+        return _node;
     }
 
     /**
