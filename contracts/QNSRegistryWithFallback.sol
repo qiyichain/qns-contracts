@@ -1,20 +1,20 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.7.0;
 
-import "./ENS.sol";
-import "./ENSRegistry.sol";
+import "./QNS.sol";
+import "./QNSRegistry.sol";
 
 /**
- * The ENS registry contract.
+ * The QNS registry contract.
  */
-contract ENSRegistryWithFallback is ENSRegistry {
+contract QNSRegistryWithFallback is QNSRegistry {
 
-    ENS public old;
+    QNS public old;
 
     /**
-     * @dev Constructs a new ENS registrar.
+     * @dev Constructs a new QNS registrar.
      */
-    constructor(ENS _old)  ENSRegistry() {
+    constructor(QNS _old)  QNSRegistry() {
         old = _old;
     }
 

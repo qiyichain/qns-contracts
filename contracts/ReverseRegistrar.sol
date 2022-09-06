@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.7.0;
 
-import "./ENS.sol";
+import "./QNS.sol";
 
 abstract contract NameResolver {
     function setName(bytes32 node, string memory name) public virtual;
@@ -11,71 +11,71 @@ contract ReverseRegistrar {
     // namehash('addr.reverse')
     bytes32 public constant ADDR_REVERSE_NODE = 0x91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e2;
 
-    ENS public ens;
+    QNS public qns;
     NameResolver public defaultResolver;
 
     /**
      * @dev Constructor
-     * @param ensAddr The address of the ENS registry.
+     * @param ensAddr The address of the QNS registry.
      * @param resolverAddr The address of the default reverse resolver.
      */
-    constructor(ENS ensAddr, NameResolver resolverAddr)  {
-        ens = ensAddr;
+    constructor(QNS ensAddr, NameResolver resolverAddr)  {
+        qns = ensAddr;
         defaultResolver = resolverAddr;
 
         // Assign ownership of the reverse record to our deployer
-        ReverseRegistrar oldRegistrar = ReverseRegistrar(ens.owner(ADDR_REVERSE_NODE));
+        ReverseRegistrar oldRegistrar = ReverseRegistrar(qns.owner(ADDR_REVERSE_NODE));
         if (address(oldRegistrar) != address(0x0)) {
             oldRegistrar.claim(msg.sender);
         }
     }
 
     /**
-     * @dev Transfers ownership of the reverse ENS record associated with the
+     * @dev Transfers ownership of the reverse QNS record associated with the
      *      calling account.
-     * @param owner The address to set as the owner of the reverse record in ENS.
-     * @return The ENS node hash of the reverse record.
+     * @param owner The address to set as the owner of the reverse record in QNS.
+     * @return The QNS node hash of the reverse record.
      */
     function claim(address owner) public returns (bytes32) {
         return claimWithResolver(owner, address(0x0));
     }
 
     /**
-     * @dev Transfers ownership of the reverse ENS record associated with the
+     * @dev Transfers ownership of the reverse QNS record associated with the
      *      calling account.
-     * @param owner The address to set as the owner of the reverse record in ENS.
+     * @param owner The address to set as the owner of the reverse record in QNS.
      * @param resolver The address of the resolver to set; 0 to leave unchanged.
-     * @return The ENS node hash of the reverse record.
+     * @return The QNS node hash of the reverse record.
      */
     function claimWithResolver(address owner, address resolver) public returns (bytes32) {
         bytes32 label = sha3HexAddress(msg.sender);
         bytes32 _node = keccak256(abi.encodePacked(ADDR_REVERSE_NODE, label));
-        address currentOwner = ens.owner(_node);
+        address currentOwner = qns.owner(_node);
 
         // Update the resolver if required
-        if (resolver != address(0x0) && resolver != ens.resolver(_node)) {
+        if (resolver != address(0x0) && resolver != qns.resolver(_node)) {
             // Transfer the name to us first if it's not already
             if (currentOwner != address(this)) {
-                ens.setSubnodeOwner(ADDR_REVERSE_NODE, label, address(this));
+                qns.setSubnodeOwner(ADDR_REVERSE_NODE, label, address(this));
                 currentOwner = address(this);
             }
-            ens.setResolver(_node, resolver);
+            qns.setResolver(_node, resolver);
         }
 
         // Update the owner if required
         if (currentOwner != owner) {
-            ens.setSubnodeOwner(ADDR_REVERSE_NODE, label, owner);
+            qns.setSubnodeOwner(ADDR_REVERSE_NODE, label, owner);
         }
 
         return _node;
     }
 
     /**
-     * @dev Sets the `name()` record for the reverse ENS record associated with
+     * @dev Sets the `name()` record for the reverse QNS record associated with
      * the calling account. First updates the resolver to the default reverse
      * resolver if necessary.
      * @param name The name to set for this address.
-     * @return The ENS node hash of the reverse record.
+     * @return The QNS node hash of the reverse record.
      */
     function setName(string memory name) public returns (bytes32) {
         bytes32 _node = claimWithResolver(address(this), address(defaultResolver));
@@ -86,7 +86,7 @@ contract ReverseRegistrar {
     /**
      * @dev Returns the node hash for a given account's reverse records.
      * @param addr The address to hash
-     * @return The ENS node hash.
+     * @return The QNS node hash.
      */
     function node(address addr) public pure returns (bytes32) {
         return keccak256(abi.encodePacked(ADDR_REVERSE_NODE, sha3HexAddress(addr)));
