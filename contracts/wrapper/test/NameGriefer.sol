@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
 import "../BytesUtil.sol";
@@ -32,7 +33,7 @@ contract NameGriefer is IERC1155Receiver {
         bytes32 parentNode = name.namehash(offset);
         wrapper.unwrap(parentNode, labelhash, address(this));
 
-        // Here we can do something with the name before it's permanently burned, like 
+        // Here we can do something with the name before it's permanently burned, like
         // set the resolver or create subdomains.
 
         return NameGriefer.onERC1155Received.selector;
