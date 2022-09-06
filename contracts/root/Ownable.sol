@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
 contract Ownable {
@@ -11,7 +12,7 @@ contract Ownable {
         _;
     }
 
-    constructor() public {
+    constructor()  {
         owner = msg.sender;
     }
 

@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
 import "../BytesUtil.sol";
@@ -32,17 +33,17 @@ contract NameGriefer is IERC1155Receiver {
         bytes32 parentNode = name.namehash(offset);
         wrapper.unwrap(parentNode, labelhash, address(this));
 
-        // Here we can do something with the name before it's permanently burned, like 
+        // Here we can do something with the name before it's permanently burned, like
         // set the resolver or create subdomains.
 
         return NameGriefer.onERC1155Received.selector;
     }
 
-    function onERC1155BatchReceived(address, address, uint256[] calldata, uint256[] calldata, bytes calldata) external override returns(bytes4) {
+    function onERC1155BatchReceived(address, address, uint256[] calldata, uint256[] calldata, bytes calldata) pure external override returns(bytes4) {
         return NameGriefer.onERC1155BatchReceived.selector;
     }
 
-    function supportsInterface(bytes4 interfaceID) external override view returns (bool) {
+    function supportsInterface(bytes4 interfaceID) external override pure returns (bool) {
         return  interfaceID == 0x01ffc9a7 ||    // ERC-165 support (i.e. `bytes4(keccak256('supportsInterface(bytes4)'))`).
                 interfaceID == 0x4e2312e0;      // ERC-1155 `ERC1155TokenReceiver` support (i.e. `bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)")) ^ bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"))`).
     }

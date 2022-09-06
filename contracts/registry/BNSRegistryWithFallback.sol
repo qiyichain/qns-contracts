@@ -57,8 +57,8 @@ contract BNSRegistryWithFallback is BNSRegistry {
         return super.ttl(node);
     }
 
-    function _setOwner(bytes32 node, address owner) internal override {
-        address addr = owner;
+    function _setOwner(bytes32 node, address owner_) internal override {
+        address addr = owner_;
         if (addr == address(0x0)) {
             addr = address(this);
         }
