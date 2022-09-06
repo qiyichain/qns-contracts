@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
 import "./SafeMath.sol";
@@ -13,7 +14,7 @@ contract LinearPremiumPriceOracle is StablePriceOracle {
 
     bytes4 constant private TIME_UNTIL_PREMIUM_ID = bytes4(keccak256("timeUntilPremium(uint,uint"));
 
-    constructor(AggregatorInterface _usdOracle, uint[] memory _rentPrices, uint _initialPremium, uint _premiumDecreaseRate) public
+    constructor(AggregatorInterface _usdOracle, uint[] memory _rentPrices, uint _initialPremium, uint _premiumDecreaseRate) 
         StablePriceOracle(_usdOracle, _rentPrices)
     {
         initialPremium = _initialPremium;
@@ -34,7 +35,7 @@ contract LinearPremiumPriceOracle is StablePriceOracle {
         if(discount > initialPremium) {
             return 0;
         }
-        
+
         return initialPremium - discount;
     }
 

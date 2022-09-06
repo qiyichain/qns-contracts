@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
 import "./SafeMath.sol";
@@ -42,7 +43,7 @@ contract ExponentialPremiumPriceOracle is StablePriceOracle {
      */
     function decayedPremium(uint256 startPremium, uint256 elapsed)
         public
-        view
+        pure
         returns (uint256)
     {
         uint256 daysPast = (elapsed * PRECISION) / SECONDS_IN_DAY;

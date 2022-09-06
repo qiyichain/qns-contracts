@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 pragma experimental ABIEncoderV2;
 
@@ -16,7 +17,7 @@ contract BulkRenewal {
 
     BNS public bns;
 
-    constructor(BNS _bns) public {
+    constructor(BNS _bns)  {
         bns = _bns;
     }
 

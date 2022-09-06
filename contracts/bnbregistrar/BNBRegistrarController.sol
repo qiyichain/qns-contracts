@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
 import "./PriceOracle.sol";
@@ -63,7 +64,7 @@ contract BNBRegistrarController is Ownable {
         PriceOracle _prices,
         uint256 _minCommitmentAge,
         uint256 _maxCommitmentAge
-    ) public {
+    )  {
         require(_maxCommitmentAge > _minCommitmentAge);
 
         base = _base;
