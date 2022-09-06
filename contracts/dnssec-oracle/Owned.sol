@@ -1,18 +1,17 @@
-//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
 /**
- * @dev Contract mixin for 'owned' contracts.
- */
+* @dev Contract mixin for 'owned' contracts.
+*/
 contract Owned {
     address public owner;
-
+    
     modifier owner_only() {
         require(msg.sender == owner);
         _;
     }
 
-    constructor()  {
+    constructor() public {
         owner = msg.sender;
     }
 

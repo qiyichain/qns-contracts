@@ -1,24 +1,13 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
-
 import "../BytesUtil.sol";
 
 contract TestBytesUtils {
     using BytesUtils for *;
 
-    function readLabel(bytes calldata name, uint256 offset)
-        public
-        pure
-        returns (bytes32, uint256)
-    {
+    function readLabel(bytes calldata name, uint offset) public pure returns(bytes32, uint) {
         return name.readLabel(offset);
     }
 
-    function namehash(bytes calldata name, uint256 offset)
-        public
-        pure
-        returns (bytes32)
-    {
+    function namehash(bytes calldata name, uint offset) public pure returns(bytes32) {
         return name.namehash(offset);
     }
 }

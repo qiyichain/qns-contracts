@@ -1,26 +1,25 @@
-//SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
-import "./ENS.sol";
+import "./BNS.sol";
 
 /**
  * A registrar that allocates subdomains to the first person to claim them, but
  * expires registrations a fixed period after they're initially claimed.
  */
 contract TestRegistrar {
-    uint256 constant registrationPeriod = 4 weeks;
+    uint constant registrationPeriod = 4 weeks;
 
-    ENS public immutable ens;
-    bytes32 public immutable rootNode;
-    mapping(bytes32 => uint256) public expiryTimes;
+    BNS public bns;
+    bytes32 public rootNode;
+    mapping (bytes32 => uint) public expiryTimes;
 
     /**
      * Constructor.
-     * @param ensAddr The address of the ENS registry.
+     * @param bnsAddr The address of the BNS registry.
      * @param node The node that this registrar administers.
      */
-    constructor(ENS ensAddr, bytes32 node) {
-        ens = ensAddr;
+    constructor(BNS bnsAddr, bytes32 node) public {
+        bns = bnsAddr;
         rootNode = node;
     }
 
@@ -33,6 +32,6 @@ contract TestRegistrar {
         require(expiryTimes[label] < block.timestamp);
 
         expiryTimes[label] = block.timestamp + registrationPeriod;
-        ens.setSubnodeOwner(rootNode, label, owner);
+        bns.setSubnodeOwner(rootNode, label, owner);
     }
 }

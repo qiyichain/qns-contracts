@@ -1,4 +1,3 @@
-//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -8,7 +7,7 @@ contract Controllable is Ownable {
 
     event ControllerChanged(address indexed controller, bool enabled);
 
-    modifier onlyController() {
+    modifier onlyController {
         require(
             controllers[msg.sender],
             "Controllable: Caller is not a controller"

@@ -1,4 +1,3 @@
-//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
 /**
@@ -12,9 +11,5 @@ interface NSEC3Digest {
      * @param iterations The number of iterations to perform.
      * @return The result of the iterated hash operation.
      */
-    function hash(
-        bytes calldata salt,
-        bytes calldata data,
-        uint256 iterations
-    ) external pure virtual returns (bytes32);
+     function hash(bytes calldata salt, bytes calldata data, uint iterations) external virtual pure returns (bytes32);
 }
