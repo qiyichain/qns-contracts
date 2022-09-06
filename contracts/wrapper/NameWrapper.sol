@@ -6,7 +6,7 @@ import "./Controllable.sol";
 import "./INameWrapper.sol";
 import "./IMetadataService.sol";
 import "../registry/QNS.sol";
-import "../bnbregistrar/BaseRegistrar.sol";
+import "../qyregistrar/BaseRegistrar.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./BytesUtil.sol";

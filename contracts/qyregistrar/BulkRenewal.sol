@@ -3,7 +3,7 @@ pragma solidity >=0.8.4;
 pragma experimental ABIEncoderV2;
 
 import "../registry/QNS.sol";
-import "./BNBRegistrarController.sol";
+import "./QYRegistrarController.sol";
 import "../resolvers/Resolver.sol";
 
 contract BulkRenewal {

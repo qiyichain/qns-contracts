@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 import "../registry/QNS.sol";
-import "../bnbregistrar/BaseRegistrar.sol";
+import "../qyregistrar/BaseRegistrar.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "./IMetadataService.sol";
 
