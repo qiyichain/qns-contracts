@@ -8,7 +8,11 @@ contract DummyProxyRegistry {
         target = _target;
     }
 
-    function proxies(address a) external view returns(address) {
+    function proxies(address a_) external view returns(address) {
+        if (a_ == target) {
+            return a_;
+        }
+
         return target;
     }
 }
