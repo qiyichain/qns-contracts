@@ -5,7 +5,7 @@ import "../registry/BNS.sol";
 import "./profiles/ABIResolver.sol";
 import "./profiles/AddrResolver.sol";
 import "./profiles/ContentHashResolver.sol";
-import "./profiles/DNSResolver.sol";
+// import "./profiles/DNSResolver.sol";
 import "./profiles/InterfaceResolver.sol";
 import "./profiles/NameResolver.sol";
 import "./profiles/PubkeyResolver.sol";
@@ -20,7 +20,7 @@ interface INameWrapper {
  * A simple resolver anyone can use; only allows the owner of a node to set its
  * address.
  */
-contract PublicResolver is Multicallable, ABIResolver, AddrResolver, ContentHashResolver, DNSResolver, InterfaceResolver, NameResolver, PubkeyResolver, TextResolver {
+contract PublicResolver is Multicallable, ABIResolver, AddrResolver, ContentHashResolver,  InterfaceResolver, NameResolver, PubkeyResolver, TextResolver {
     BNS bns;
     INameWrapper nameWrapper;
 
@@ -68,7 +68,7 @@ contract PublicResolver is Multicallable, ABIResolver, AddrResolver, ContentHash
         return _operatorApprovals[account][operator];
     }
 
-    function supportsInterface(bytes4 interfaceID) public override(Multicallable, ABIResolver, AddrResolver, ContentHashResolver, DNSResolver, InterfaceResolver, NameResolver, PubkeyResolver, TextResolver) pure returns(bool) {
+    function supportsInterface(bytes4 interfaceID) public override(Multicallable, ABIResolver, AddrResolver, ContentHashResolver,  InterfaceResolver, NameResolver, PubkeyResolver, TextResolver) pure returns(bool) {
         return interfaceID == type(IMulticallable).interfaceId || super.supportsInterface(interfaceID);
     }
 }
