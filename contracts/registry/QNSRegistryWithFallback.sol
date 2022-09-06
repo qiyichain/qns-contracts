@@ -1,20 +1,20 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
-import "./BNS.sol";
-import "./BNSRegistry.sol";
+import "./QNS.sol";
+import "./QNSRegistry.sol";
 
 /**
  * The BNS registry contract.
  */
-contract BNSRegistryWithFallback is BNSRegistry {
+contract QNSRegistryWithFallback is QNSRegistry {
 
-    BNS public old;
+    QNS public old;
 
     /**
      * @dev Constructs a new BNS registrar.
      */
-    constructor(BNS _old) BNSRegistry() {
+    constructor(QNS _old) QNSRegistry() {
         old = _old;
     }
 

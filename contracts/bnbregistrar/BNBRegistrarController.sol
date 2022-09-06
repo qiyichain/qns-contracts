@@ -189,7 +189,7 @@ contract BNBRegistrarController is Ownable {
             );
 
             // Set the resolver
-            base.bns().setResolver(nodehash, resolver);
+            base.qns().setResolver(nodehash, resolver);
 
             // Configure the resolver
             if (addr != address(0)) {

@@ -1,17 +1,17 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
-import "./BNS.sol";
+import "./QNS.sol";
 
 /**
  * A registrar that allocates subdomains to the first person to claim them.
  */
 contract FIFSRegistrar {
-    BNS bns;
+    QNS qns;
     bytes32 rootNode;
 
     modifier only_owner(bytes32 label) {
-        address currentOwner = bns.owner(keccak256(abi.encodePacked(rootNode, label)));
+        address currentOwner = qns.owner(keccak256(abi.encodePacked(rootNode, label)));
         require(currentOwner == address(0x0) || currentOwner == msg.sender);
         _;
     }
@@ -21,8 +21,8 @@ contract FIFSRegistrar {
      * @param bnsAddr The address of the BNS registry.
      * @param node The node that this registrar administers.
      */
-    constructor(BNS bnsAddr, bytes32 node)  {
-        bns = bnsAddr;
+    constructor(QNS bnsAddr, bytes32 node)  {
+        qns = bnsAddr;
         rootNode = node;
     }
 
@@ -32,6 +32,6 @@ contract FIFSRegistrar {
      * @param owner The address of the new owner.
      */
     function register(bytes32 label, address owner) public only_owner(label) {
-        bns.setSubnodeOwner(rootNode, label, owner);
+        qns.setSubnodeOwner(rootNode, label, owner);
     }
 }

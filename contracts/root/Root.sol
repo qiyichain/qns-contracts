@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "../registry/BNS.sol";
+import "../registry/QNS.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Controllable.sol";
 
@@ -13,11 +13,11 @@ contract Root is Ownable, Controllable {
 
     event TLDLocked(bytes32 indexed label);
 
-    BNS public bns;
+    QNS public qns;
     mapping(bytes32 => bool) public locked;
 
-    constructor(BNS _bns)  {
-        bns = _bns;
+    constructor(QNS _qns)  {
+        qns = _qns;
     }
 
     function setSubnodeOwner(bytes32 label, address owner)
@@ -25,11 +25,11 @@ contract Root is Ownable, Controllable {
         onlyController
     {
         require(!locked[label]);
-        bns.setSubnodeOwner(ROOT_NODE, label, owner);
+        qns.setSubnodeOwner(ROOT_NODE, label, owner);
     }
 
     function setResolver(address resolver) external onlyOwner {
-        bns.setResolver(ROOT_NODE, resolver);
+        qns.setResolver(ROOT_NODE, resolver);
     }
 
     function lock(bytes32 label) external onlyOwner {

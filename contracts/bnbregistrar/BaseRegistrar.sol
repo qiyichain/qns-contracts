@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "../registry/BNS.sol";
+import "../registry/QNS.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -14,8 +14,8 @@ abstract contract BaseRegistrar is Ownable, IERC721 {
     event NameRegistered(uint256 indexed id, address indexed owner, uint expires);
     event NameRenewed(uint256 indexed id, uint expires);
 
-    // The BNS registry
-    BNS public bns;
+    // The QNS registry
+    QNS public qns;
 
     // The namehash of the TLD this registrar owns (eg, .bnb)
     bytes32 public baseNode;

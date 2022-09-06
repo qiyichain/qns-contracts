@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
-import "../registry/BNS.sol";
+import "../registry/QNS.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 import "./BaseRegistrar.sol";
@@ -38,14 +38,14 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
         return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
     }
 
-    constructor(BNS _bns, bytes32 _baseNode, string memory name, string memory symbol, string memory _base) ERC721(name, symbol) {
-        bns = _bns;
+    constructor(QNS _qns, bytes32 _baseNode, string memory name, string memory symbol, string memory _base) ERC721(name, symbol) {
+        qns = _qns;
         baseNode = _baseNode;
         baseURI = _base;
     }
 
     modifier live {
-        require(bns.owner(baseNode) == address(this));
+        require(qns.owner(baseNode) == address(this));
         _;
     }
 
@@ -79,7 +79,7 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
 
     // Set the resolver for the TLD this registrar manages.
     function setResolver(address resolver) external override onlyOwner {
-        bns.setResolver(baseNode, resolver);
+        qns.setResolver(baseNode, resolver);
     }
 
     // Returns the expiration timestamp of the specified id.
@@ -133,7 +133,7 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
         }
         _mint(owner, id);
         if(updateRegistry) {
-            bns.setSubnodeOwner(baseNode, bytes32(id), owner);
+            qns.setSubnodeOwner(baseNode, bytes32(id), owner);
         }
 
         emit NameRegistered(id, owner, block.timestamp + duration);
@@ -155,7 +155,7 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
      */
     function reclaim(uint256 id, address owner) external override live {
         require(_isApprovedOrOwner(msg.sender, id), "You must be the owner or approved for this name");
-        bns.setSubnodeOwner(baseNode, bytes32(id), owner);
+        qns.setSubnodeOwner(baseNode, bytes32(id), owner);
     }
 
     function supportsInterface(bytes4 interfaceID) public override(ERC721, IERC165) pure returns (bool) {

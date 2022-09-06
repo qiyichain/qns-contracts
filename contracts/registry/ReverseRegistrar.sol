@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
-import "./BNS.sol";
+import "./QNS.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../root/Controllable.sol";
 
@@ -16,23 +16,23 @@ bytes32 constant ADDR_REVERSE_NODE = 0x91d1777781884d03a6757a803996e38de2a42967f
 // namehash('addr.reverse')
 
 contract ReverseRegistrar is Ownable, Controllable {
-    BNS public bns;
+    QNS public qns;
     NameResolver public defaultResolver;
 
     event ReverseClaimed(address indexed addr, bytes32 indexed node);
 
     /**
      * @dev Constructor
-     * @param bnsAddr The address of the BNS registry.
+     * @param qnsAddr The address of the BNS registry.
      * @param resolverAddr The address of the default reverse resolver.
      */
-    constructor(BNS bnsAddr, NameResolver resolverAddr) {
-        bns = bnsAddr;
+    constructor(QNS qnsAddr, NameResolver resolverAddr) {
+        qns = qnsAddr;
         defaultResolver = resolverAddr;
 
         // Assign ownership of the reverse record to our deployer
         ReverseRegistrar oldRegistrar = ReverseRegistrar(
-            bns.owner(ADDR_REVERSE_NODE)
+            qns.owner(ADDR_REVERSE_NODE)
         );
         if (address(oldRegistrar) != address(0x0)) {
             oldRegistrar.claim(msg.sender);
@@ -43,7 +43,7 @@ contract ReverseRegistrar is Ownable, Controllable {
         require(
             addr == msg.sender ||
                 controllers[msg.sender] ||
-                bns.isApprovedForAll(addr, msg.sender) ||
+                qns.isApprovedForAll(addr, msg.sender) ||
                 ownsContract(addr),
             "Caller is not a controller or authorised by address or the address itself"
         );
@@ -143,7 +143,7 @@ contract ReverseRegistrar is Ownable, Controllable {
             address(defaultResolver)
         );
         defaultResolver.setName(_node, name);
-        bns.setSubnodeOwner(ADDR_REVERSE_NODE, sha3HexAddress(addr), owner);
+        qns.setSubnodeOwner(ADDR_REVERSE_NODE, sha3HexAddress(addr), owner);
         return _node;
     }
 
@@ -194,12 +194,12 @@ contract ReverseRegistrar is Ownable, Controllable {
     ) internal returns (bytes32) {
         bytes32 label = sha3HexAddress(addr);
         bytes32 _node = keccak256(abi.encodePacked(ADDR_REVERSE_NODE, label));
-        address currentResolver = bns.resolver(_node);
+        address currentResolver = qns.resolver(_node);
         bool shouldUpdateResolver = (resolver != address(0x0) &&
             resolver != currentResolver);
         address newResolver = shouldUpdateResolver ? resolver : currentResolver;
 
-        bns.setSubnodeRecord(ADDR_REVERSE_NODE, label, owner, newResolver, 0);
+        qns.setSubnodeRecord(ADDR_REVERSE_NODE, label, owner, newResolver, 0);
 
         emit ReverseClaimed(addr, _node);
 

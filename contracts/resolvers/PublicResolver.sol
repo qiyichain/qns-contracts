@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
-import "../registry/BNS.sol";
+import "../registry/QNS.sol";
 import "./profiles/ABIResolver.sol";
 import "./profiles/AddrResolver.sol";
 import "./profiles/ContentHashResolver.sol";
-// import "./profiles/DNSResolver.sol";
 import "./profiles/InterfaceResolver.sol";
 import "./profiles/NameResolver.sol";
 import "./profiles/PubkeyResolver.sol";
@@ -21,7 +20,7 @@ interface INameWrapper {
  * address.
  */
 contract PublicResolver is Multicallable, ABIResolver, AddrResolver, ContentHashResolver,  InterfaceResolver, NameResolver, PubkeyResolver, TextResolver {
-    BNS bns;
+    QNS qns;
     INameWrapper nameWrapper;
 
     /**
@@ -35,8 +34,8 @@ contract PublicResolver is Multicallable, ABIResolver, AddrResolver, ContentHash
     // Logged when an operator is added or removed.
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
-    constructor(BNS _bns, INameWrapper wrapperAddress){
-        bns = _bns;
+    constructor(QNS _qns, INameWrapper wrapperAddress){
+        qns = _qns;
         nameWrapper = wrapperAddress;
     }
 
@@ -54,7 +53,7 @@ contract PublicResolver is Multicallable, ABIResolver, AddrResolver, ContentHash
     }
 
     function isAuthorised(bytes32 node) internal override view returns(bool) {
-        address owner = bns.owner(node);
+        address owner = qns.owner(node);
         if(owner == address(nameWrapper) ){
             owner = nameWrapper.ownerOf(uint256(node));
         }

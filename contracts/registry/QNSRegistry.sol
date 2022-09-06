@@ -1,22 +1,22 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
-import "./BNS.sol";
+import "./QNS.sol";
 
 
 // https://bns.id
 
-//  ____  _   _ ____
-// | __ )| \ | / ___|
-// |  _ \|  \| \___ \
-// | |_) | |\  |___) |
-// |____/|_| \_|____/
+//   ____  _   _ ____
+//  / __ \| \ | / ___|
+// | /  \ |  \| \___ \
+// \ \__/\|  \  |___) |
+//  \____\_\_|\_|____/
 
 
 /**
- * The BNS registry contract.
+ * The QNS registry contract.
  */
-contract BNSRegistry is BNS {
+contract QNSRegistry is QNS {
 
     struct Record {
         address owner;
@@ -35,7 +35,7 @@ contract BNSRegistry is BNS {
     }
 
     /**
-     * @dev Constructs a new BNS registrar.
+     * @dev Constructs a new QNS registrar.
      */
     constructor()  {
         records[0x0].owner = msg.sender;

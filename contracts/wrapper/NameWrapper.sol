@@ -5,7 +5,7 @@ import "./ERC1155Fuse.sol";
 import "./Controllable.sol";
 import "./INameWrapper.sol";
 import "./IMetadataService.sol";
-import "../registry/BNS.sol";
+import "../registry/QNS.sol";
 import "../bnbregistrar/BaseRegistrar.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -19,29 +19,29 @@ contract NameWrapper is
     IERC721Receiver
 {
     using BytesUtils for bytes;
-    BNS public immutable override bns;
+    QNS public immutable override qns;
     BaseRegistrar public immutable override registrar;
     IMetadataService public override metadataService;
     mapping(bytes32 => bytes) public override names;
 
-    bytes32 private constant BNB_NODE =
+    bytes32 private constant QNS_NODE =
         0xdba5666821b22671387fe7ea11d7cc41ede85a5aa67c3e7b3d68ce6a661f389c;
     bytes32 private constant ROOT_NODE =
         0x0000000000000000000000000000000000000000000000000000000000000000;
 
     constructor(
-        BNS _bns,
+        QNS _qns,
         BaseRegistrar _registrar,
         IMetadataService _metadataService
     ) {
-        bns = _bns;
+        qns = _qns;
         registrar = _registrar;
         metadataService = _metadataService;
 
-        /* Burn CANNOT_REPLACE_SUBDOMAIN and CANNOT_UNWRAP fuses for ROOT_NODE and BNB_NODE */
+        /* Burn CANNOT_REPLACE_SUBDOMAIN and CANNOT_UNWRAP fuses for ROOT_NODE and QNS_NODE */
 
         _setData(
-            uint256(BNB_NODE),
+            uint256(QNS_NODE),
             address(0x0),
             uint96(CANNOT_REPLACE_SUBDOMAIN | CANNOT_UNWRAP)
         );
@@ -51,7 +51,7 @@ contract NameWrapper is
             uint96(CANNOT_REPLACE_SUBDOMAIN | CANNOT_UNWRAP)
         );
         names[ROOT_NODE] = "\x00";
-        names[BNB_NODE] = "\x03bnb\x00";
+        names[QNS_NODE] = "\x03qy\x00";
     }
 
     function supportsInterface(bytes4 interfaceId)
@@ -154,7 +154,7 @@ contract NameWrapper is
      * @param wrappedOwner Owner of the name in this contract
      */
 
-    function wrapBNB2LD(
+    function wrapQY2LD(
         string calldata label,
         address wrappedOwner,
         uint96 _fuses,
@@ -176,7 +176,7 @@ contract NameWrapper is
         // transfer the bns record back to the new owner (this contract)
         registrar.reclaim(tokenId, address(this));
 
-        _wrapBNB2LD(label, wrappedOwner, _fuses, resolver);
+        _wrapQY2LD(label, wrappedOwner, _fuses, resolver);
     }
 
     /**
@@ -188,7 +188,7 @@ contract NameWrapper is
      * @param resolver The resolver address to set on the BNS registry (optional).
      * @return expires The expiry date of the new name, in seconds since the Unix epoch.
      */
-    function registerAndWrapBNB2LD(
+    function registerAndWrapQY2LD(
         string calldata label,
         address wrappedOwner,
         uint256 duration,
@@ -198,7 +198,7 @@ contract NameWrapper is
         uint256 tokenId = uint256(keccak256(bytes(label)));
 
         expires = registrar.register(tokenId, address(this), duration);
-        _wrapBNB2LD(label, wrappedOwner, _fuses, resolver);
+        _wrapQY2LD(label, wrappedOwner, _fuses, resolver);
     }
 
     /**
@@ -236,23 +236,23 @@ contract NameWrapper is
         bytes32 node = _makeNode(parentNode, labelhash);
 
         require(
-            parentNode != BNB_NODE,
+            parentNode != QNS_NODE,
             "NameWrapper: .bnb domains need to use wrapBNB2LD()"
         );
 
-        address owner = bns.owner(node);
+        address owner = qns.owner(node);
         require(
             owner == msg.sender ||
                 isApprovedForAll(owner, msg.sender) ||
-                bns.isApprovedForAll(owner, msg.sender),
+                qns.isApprovedForAll(owner, msg.sender),
             "NameWrapper: Domain is not owned by the sender"
         );
 
         if (resolver != address(0)) {
-            bns.setResolver(node, resolver);
+            qns.setResolver(node, resolver);
         }
 
-        bns.setOwner(node, address(this));
+        qns.setOwner(node, address(this));
 
         _wrap(node, name, wrappedOwner, _fuses);
     }
@@ -265,12 +265,12 @@ contract NameWrapper is
      * @param newController sets the owner in the registry to this address
      */
 
-    function unwrapBNB2LD(
+    function unwrapQY2LD(
         bytes32 label,
         address newRegistrant,
         address newController
-    ) public override onlyTokenOwner(_makeNode(BNB_NODE, label)) {
-        _unwrap(_makeNode(BNB_NODE, label), newController);
+    ) public  onlyTokenOwner(_makeNode(QNS_NODE, label)) {
+        _unwrap(_makeNode(QNS_NODE, label), newController);
         registrar.transferFrom(address(this), newRegistrant, uint256(label));
     }
 
@@ -288,7 +288,7 @@ contract NameWrapper is
         address newController
     ) public override onlyTokenOwner(_makeNode(parentNode, label)) {
         require(
-            parentNode != BNB_NODE,
+            parentNode != QNS_NODE,
             "NameWrapper: .bnb names must be unwrapped with unwrapBNB2LD()"
         );
         _unwrap(_makeNode(parentNode, label), newController);
@@ -337,7 +337,7 @@ contract NameWrapper is
         onlyTokenOwner(parentNode)
         canCallSetSubnodeOwner(parentNode, label)
     {
-        bns.setSubnodeRecord(parentNode, label, owner, resolver, ttl);
+        qns.setSubnodeRecord(parentNode, label, owner, resolver, ttl);
     }
 
     /**
@@ -358,7 +358,7 @@ contract NameWrapper is
         canCallSetSubnodeOwner(parentNode, label)
         returns (bytes32)
     {
-        return bns.setSubnodeOwner(parentNode, label, owner);
+        return qns.setSubnodeOwner(parentNode, label, owner);
     }
 
     /**
@@ -433,7 +433,7 @@ contract NameWrapper is
             CANNOT_TRANSFER | CANNOT_SET_RESOLVER | CANNOT_SET_TTL
         )
     {
-        bns.setRecord(node, owner, resolver, ttl);
+        qns.setRecord(node, owner, resolver, ttl);
     }
 
     /**
@@ -448,7 +448,7 @@ contract NameWrapper is
         onlyTokenOwner(node)
         operationAllowed(node, CANNOT_SET_RESOLVER)
     {
-        bns.setResolver(node, resolver);
+        qns.setResolver(node, resolver);
     }
 
     /**
@@ -463,7 +463,7 @@ contract NameWrapper is
         onlyTokenOwner(node)
         operationAllowed(node, CANNOT_SET_TTL)
     {
-        bns.setTTL(node, ttl);
+        qns.setTTL(node, ttl);
     }
 
     /**
@@ -492,7 +492,7 @@ contract NameWrapper is
 
     modifier canCallSetSubnodeOwner(bytes32 node, bytes32 label) {
         bytes32 subnode = _makeNode(node, label);
-        address owner = bns.owner(subnode);
+        address owner = qns.owner(subnode);
         (, uint96 fuses) = getData(uint256(node));
 
         require(
@@ -549,7 +549,7 @@ contract NameWrapper is
         // transfer the bns record back to the new owner (this contract)
         registrar.reclaim(uint256(labelhash), address(this));
 
-        _wrapBNB2LD(label, owner, fuses, resolver);
+        _wrapQY2LD(label, owner, fuses, resolver);
 
         return IERC721Receiver(to).onERC721Received.selector;
     }
@@ -602,18 +602,18 @@ contract NameWrapper is
         emit NameWrapped(node, name, wrappedOwner, fuses);
     }
 
-    function _wrapBNB2LD(
+    function _wrapQY2LD(
         string memory label,
         address wrappedOwner,
         uint96 _fuses,
         address resolver
     ) private returns (bytes32 labelhash) {
         labelhash = keccak256(bytes(label));
-        bytes32 node = _makeNode(BNB_NODE, labelhash);
-        bytes memory name = _addLabel(label, "\x03bnb\x00");
+        bytes32 node = _makeNode(QNS_NODE, labelhash);
+        bytes memory name = _addLabel(label, "\x03qy\x00");
 
         if (resolver != address(0)) {
-            bns.setResolver(node, resolver);
+            qns.setResolver(node, resolver);
         }
 
         // mint a new ERC1155 token with fuses
@@ -636,7 +636,7 @@ contract NameWrapper is
 
         // burn token and fuse data
         _burn(uint256(node));
-        bns.setOwner(node, newOwner);
+        qns.setOwner(node, newOwner);
 
         emit NameUnwrapped(node, newOwner);
     }
@@ -719,7 +719,7 @@ contract NameWrapper is
         bytes32 node,
         bytes32 parentNode
     ) internal view returns (NameSafety vulnerability, bytes32 vulnerableNode) {
-        if (parentNode == BNB_NODE) {
+        if (parentNode == QNS_NODE) {
             // Special case .bnb: Check registrant or name isexpired
 
             try registrar.ownerOf(uint256(labelhash)) returns (
@@ -733,7 +733,7 @@ contract NameWrapper is
             }
         }
 
-        if (bns.owner(node) != address(this)) {
+        if (qns.owner(node) != address(this)) {
             return (NameSafety.ControllerNotWrapped, node);
         }
         return (NameSafety.Safe, 0);

@@ -2,7 +2,7 @@
 pragma solidity >=0.8.4;
 pragma experimental ABIEncoderV2;
 
-import "../registry/BNS.sol";
+import "../registry/QNS.sol";
 import "./BNBRegistrarController.sol";
 import "../resolvers/Resolver.sol";
 
@@ -15,14 +15,14 @@ contract BulkRenewal {
         keccak256("renewAll(string[],uint")
     );
 
-    BNS public bns;
+    QNS public qns;
 
-    constructor(BNS _bns)  {
-        bns = _bns;
+    constructor(QNS _qns)  {
+        qns = _qns;
     }
 
     function getController() internal view returns(BNBRegistrarController) {
-        Resolver r = Resolver(bns.resolver(BNB_NAMEHASH));
+        Resolver r = Resolver(qns.resolver(BNB_NAMEHASH));
         return BNBRegistrarController(r.interfaceImplementer(BNB_NAMEHASH, REGISTRAR_CONTROLLER_ID));
     }
 

@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
-import "./BNS.sol";
+import "./QNS.sol";
 
 /**
  * A registrar that allocates subdomains to the first person to claim them, but
@@ -10,17 +10,17 @@ import "./BNS.sol";
 contract TestRegistrar {
     uint constant registrationPeriod = 4 weeks;
 
-    BNS public bns;
+    QNS public qns;
     bytes32 public rootNode;
     mapping (bytes32 => uint) public expiryTimes;
 
     /**
      * Constructor.
-     * @param bnsAddr The address of the BNS registry.
+     * @param bnsAddr The address of the QNS registry.
      * @param node The node that this registrar administers.
      */
-    constructor(BNS bnsAddr, bytes32 node)  {
-        bns = bnsAddr;
+    constructor(QNS bnsAddr, bytes32 node)  {
+        qns = bnsAddr;
         rootNode = node;
     }
 
@@ -33,6 +33,6 @@ contract TestRegistrar {
         require(expiryTimes[label] < block.timestamp);
 
         expiryTimes[label] = block.timestamp + registrationPeriod;
-        bns.setSubnodeOwner(rootNode, label, owner);
+        qns.setSubnodeOwner(rootNode, label, owner);
     }
 }

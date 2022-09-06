@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "../registry/BNS.sol";
+import "../registry/QNS.sol";
 import "../bnbregistrar/BaseRegistrar.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "./IMetadataService.sol";
@@ -34,7 +34,7 @@ interface INameWrapper is IERC1155 {
 
     event FusesBurned(bytes32 indexed node, uint96 fuses);
 
-    function bns() external view returns(BNS);
+    function qns() external view returns(QNS);
     function registrar() external view returns(BaseRegistrar);
     function metadataService() external view returns(IMetadataService);
     function names(bytes32) external view returns(bytes memory);
@@ -46,14 +46,14 @@ interface INameWrapper is IERC1155 {
         address resolver
     ) external;
 
-    function wrapBNB2LD(
+    function wrapQY2LD(
         string calldata label,
         address wrappedOwner,
         uint96 _fuses,
         address resolver
     ) external;
 
-    function registerAndWrapBNB2LD(
+    function registerAndWrapQY2LD(
         string calldata label,
         address wrappedOwner,
         uint256 duration,
@@ -71,7 +71,7 @@ interface INameWrapper is IERC1155 {
         address owner
     ) external;
 
-    function unwrapBNB2LD(
+    function unwrapQY2LD(
         bytes32 label,
         address newRegistrant,
         address newController
