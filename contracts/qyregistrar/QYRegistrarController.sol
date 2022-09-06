@@ -9,7 +9,7 @@ import "../resolvers/Resolver.sol";
 /**
  * @dev A registrar controller for registering and renewing names at fixed cost.
  */
-contract BNBRegistrarController is Ownable {
+contract QYRegistrarController is Ownable {
     using StringUtils for *;
 
     uint256 public constant MIN_REGISTRATION_DURATION = 28 days;

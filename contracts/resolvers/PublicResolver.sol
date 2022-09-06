@@ -11,9 +11,6 @@ import "./profiles/PubkeyResolver.sol";
 import "./profiles/TextResolver.sol";
 import "./Multicallable.sol";
 
-interface INameWrapper {
-    function ownerOf(uint256 id) external view returns (address);
-}
 
 /**
  * A simple resolver anyone can use; only allows the owner of a node to set its
@@ -21,7 +18,6 @@ interface INameWrapper {
  */
 contract PublicResolver is Multicallable, ABIResolver, AddrResolver, ContentHashResolver,  InterfaceResolver, NameResolver, PubkeyResolver, TextResolver {
     QNS qns;
-    INameWrapper nameWrapper;
 
     /**
      * A mapping of operators. An address that is authorised for an address
@@ -34,9 +30,8 @@ contract PublicResolver is Multicallable, ABIResolver, AddrResolver, ContentHash
     // Logged when an operator is added or removed.
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
-    constructor(QNS _qns, INameWrapper wrapperAddress){
+    constructor(QNS _qns){
         qns = _qns;
-        nameWrapper = wrapperAddress;
     }
 
     /**
@@ -54,9 +49,6 @@ contract PublicResolver is Multicallable, ABIResolver, AddrResolver, ContentHash
 
     function isAuthorised(bytes32 node) internal override view returns(bool) {
         address owner = qns.owner(node);
-        if(owner == address(nameWrapper) ){
-            owner = nameWrapper.ownerOf(uint256(node));
-        }
         return owner == msg.sender || isApprovedForAll(owner, msg.sender);
     }
 
