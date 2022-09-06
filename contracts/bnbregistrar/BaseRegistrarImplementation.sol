@@ -102,17 +102,6 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
         baseURI = _base;
     }
 
-    // function claimOld(uint256 id) external {
-    //     require(!_exists(id), "This name is already mined");
-    //     IBase oldContract = IBase(0x5eE17161A6d2848ef0D15E6b6A1FcB7c3CE4896C);
-    //     require(msg.sender == oldContract.ownerOf(id), "You are not the owner of this name");
-
-    //     uint duration = oldContract.nameExpires(id);
-    //     require(duration > block.timestamp, "This name is not expired");
-    //     expiries[id] = block.timestamp + duration;
-    //     _mint(msg.sender, id);
-    // }
-
     /**
      * @dev Register a name.
      * @param id The token ID (keccak256 of the label).
