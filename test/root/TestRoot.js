@@ -14,6 +14,7 @@ contract('Root', function(accounts) {
 
     beforeEach(async function() {
         node = namehash.hash('eth');
+       
 
         ens = await ENS.new();
         root = await Root.new(ens.address);

@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
-import "../registry/BNS.sol";
+import "../registry/QNS.sol";
 import "../registry/ReverseRegistrar.sol";
 
 /**
@@ -12,7 +12,7 @@ contract DefaultReverseResolver {
     // namehash('addr.reverse')
     bytes32 constant _ADDR_REVERSE_NODE = 0x91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e2;
 
-    BNS public bns;
+    QNS public qns;
     mapping (bytes32 => string) public name;
 
     /**
@@ -20,19 +20,19 @@ contract DefaultReverseResolver {
      * @param node The node permission is required for.
      */
     modifier onlyOwner(bytes32 node) {
-        require(msg.sender == bns.owner(node));
+        require(msg.sender == qns.owner(node));
         _;
     }
 
     /**
      * @dev Constructor
-     * @param bnsAddr The address of the BNS registry.
+     * @param qnsAddr The address of the BNS registry.
      */
-    constructor(BNS bnsAddr) {
-        bns = bnsAddr;
+    constructor(QNS qnsAddr) {
+        qns = qnsAddr;
 
         // Assign ownership of the reverse record to our deployer
-        ReverseRegistrar registrar = ReverseRegistrar(bns.owner(_ADDR_REVERSE_NODE));
+        ReverseRegistrar registrar = ReverseRegistrar(qns.owner(_ADDR_REVERSE_NODE));
         if (address(registrar) != address(0x0)) {
             registrar.claim(msg.sender);
         }
