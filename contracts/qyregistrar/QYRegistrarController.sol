@@ -2,7 +2,7 @@
 pragma solidity >=0.8.4;
 
 import "./BaseRegistrarImplementation.sol";
-import "./StringUtils.sol";
+import "../utils/StringUtils.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../resolvers/Resolver.sol";
 
