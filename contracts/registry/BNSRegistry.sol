@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
 import "./BNS.sol";
@@ -5,12 +6,12 @@ import "./BNS.sol";
 
 // https://bns.id
 
-//  ____  _   _ ____  
-// | __ )| \ | / ___| 
-// |  _ \|  \| \___ \ 
+//  ____  _   _ ____
+// | __ )| \ | / ___|
+// |  _ \|  \| \___ \
 // | |_) | |\  |___) |
-// |____/|_| \_|____/ 
-                   
+// |____/|_| \_|____/
+
 
 /**
  * The BNS registry contract.

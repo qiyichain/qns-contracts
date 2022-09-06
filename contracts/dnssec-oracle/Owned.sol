@@ -5,13 +5,13 @@ pragma solidity ^0.8.4;
 */
 contract Owned {
     address public owner;
-    
+
     modifier owner_only() {
         require(msg.sender == owner);
         _;
     }
 
-    constructor() public {
+    constructor()  {
         owner = msg.sender;
     }
 

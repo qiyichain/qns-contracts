@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
 import "./BNS.sol";
@@ -18,7 +19,7 @@ contract TestRegistrar {
      * @param bnsAddr The address of the BNS registry.
      * @param node The node that this registrar administers.
      */
-    constructor(BNS bnsAddr, bytes32 node) public {
+    constructor(BNS bnsAddr, bytes32 node)  {
         bns = bnsAddr;
         rootNode = node;
     }

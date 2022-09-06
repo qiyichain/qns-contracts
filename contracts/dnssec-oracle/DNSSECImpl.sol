@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
 
@@ -530,7 +531,7 @@ contract DNSSECImpl is DNSSEC, Owned {
 
     /**
      * @dev Attempts to verify a signed RRSET against an already known hash. This function assumes
-     *      that the record 
+     *      that the record
      * @param rrset The signed set to verify.
      * @param data The original data the signed set was read from.
      * @param proof The serialized DS or DNSKEY record to use as proof.

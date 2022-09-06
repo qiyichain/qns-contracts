@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
 import "./BNS.sol";
@@ -112,13 +113,13 @@ contract ReverseRegistrar is Ownable, Controllable {
      * @return The BNS node hash of the reverse record.
      */
     function setName(string memory name) public returns (bytes32) {
-        bytes32 node = _claimWithResolver(
+        bytes32 _node = _claimWithResolver(
             msg.sender,
             address(this),
             address(defaultResolver)
         );
-        defaultResolver.setName(node, name);
-        return node;
+        defaultResolver.setName(_node, name);
+        return _node;
     }
 
     /**
@@ -136,14 +137,14 @@ contract ReverseRegistrar is Ownable, Controllable {
         address owner,
         string memory name
     ) public authorised(addr) returns (bytes32) {
-        bytes32 node = _claimWithResolver(
+        bytes32 _node = _claimWithResolver(
             addr,
             address(this),
             address(defaultResolver)
         );
-        defaultResolver.setName(node, name);
+        defaultResolver.setName(_node, name);
         bns.setSubnodeOwner(ADDR_REVERSE_NODE, sha3HexAddress(addr), owner);
-        return node;
+        return _node;
     }
 
     /**
@@ -192,17 +193,17 @@ contract ReverseRegistrar is Ownable, Controllable {
         address resolver
     ) internal returns (bytes32) {
         bytes32 label = sha3HexAddress(addr);
-        bytes32 node = keccak256(abi.encodePacked(ADDR_REVERSE_NODE, label));
-        address currentResolver = bns.resolver(node);
+        bytes32 _node = keccak256(abi.encodePacked(ADDR_REVERSE_NODE, label));
+        address currentResolver = bns.resolver(_node);
         bool shouldUpdateResolver = (resolver != address(0x0) &&
             resolver != currentResolver);
         address newResolver = shouldUpdateResolver ? resolver : currentResolver;
 
         bns.setSubnodeRecord(ADDR_REVERSE_NODE, label, owner, newResolver, 0);
 
-        emit ReverseClaimed(addr, node);
+        emit ReverseClaimed(addr, _node);
 
-        return node;
+        return _node;
     }
 
     function ownsContract(address addr) internal view returns (bool) {

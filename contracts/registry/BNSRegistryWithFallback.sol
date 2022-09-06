@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
 import "./BNS.sol";
@@ -13,7 +14,7 @@ contract BNSRegistryWithFallback is BNSRegistry {
     /**
      * @dev Constructs a new BNS registrar.
      */
-    constructor(BNS _old) public BNSRegistry() {
+    constructor(BNS _old) BNSRegistry() {
         old = _old;
     }
 
