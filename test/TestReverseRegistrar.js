@@ -1,6 +1,6 @@
 const DummyResolver = artifacts.require('./mocks/DummyResolver.sol');
 const ReverseRegistrar = artifacts.require('ReverseRegistrar.sol');
-const ENS = artifacts.require('ENSRegistry.sol');
+const QNS = artifacts.require('QNSRegistry.sol');
 
 const namehash = require('eth-ens-namehash');
 const sha3 = require('web3-utils').sha3;
@@ -12,7 +12,7 @@ contract('ReverseRegistar', function (accounts) {
 
     beforeEach(async () => {
         node = namehash.hash(accounts[0].slice(2).toLowerCase() + ".addr.reverse");
-        ens = await ENS.new();
+        ens = await QNS.new();
         resolver = await DummyResolver.new();
         registrar = await ReverseRegistrar.new(ens.address, resolver.address);
 

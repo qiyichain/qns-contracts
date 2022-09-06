@@ -1,26 +1,26 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.7.0;
 
-import "./ENS.sol";
+import "./QNS.sol";
 
 /**
  * A registrar that allocates subdomains to the first person to claim them, but
  * expires registrations a fixed period after they're initially claimed.
  */
 contract TestRegistrar {
-    uint constant registrationPeriod = 4 weeks;
+    uint constant registrationPeriod = 1 seconds;// weeks;
 
-    ENS public ens;
+    QNS public qns;
     bytes32 public rootNode;
     mapping (bytes32 => uint) public expiryTimes;
 
     /**
      * Constructor.
-     * @param ensAddr The address of the ENS registry.
+     * @param ensAddr The address of the QNS registry.
      * @param node The node that this registrar administers.
      */
-    constructor(ENS ensAddr, bytes32 node)  {
-        ens = ensAddr;
+    constructor(QNS ensAddr, bytes32 node)  {
+        qns = ensAddr;
         rootNode = node;
     }
 
@@ -33,6 +33,6 @@ contract TestRegistrar {
         require(expiryTimes[label] < block.timestamp);
 
         expiryTimes[label] = block.timestamp + registrationPeriod;
-        ens.setSubnodeOwner(rootNode, label, owner);
+        qns.setSubnodeOwner(rootNode, label, owner);
     }
 }

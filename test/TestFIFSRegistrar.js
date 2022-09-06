@@ -1,5 +1,5 @@
 const FIFSRegistrar = artifacts.require('FIFSRegistrar.sol');
-const ENS = artifacts.require('ENSRegistry.sol');
+const QNS = artifacts.require('QNSRegistry.sol');
 
 const { exceptions } = require('@ensdomains/test-utils');
 const sha3 = require('web3-utils').sha3;
@@ -10,31 +10,31 @@ contract('FIFSRegistrar', function (accounts) {
     let registrar, ens;
 
     beforeEach(async () => {
-        ens = await ENS.new();
+        ens = await QNS.new();
         registrar = await FIFSRegistrar.new(ens.address, '0x0');
 
         await ens.setOwner('0x0', registrar.address, {from: accounts[0]})
     });
 
     it('should allow registration of names', async () => {
-        await registrar.register(sha3('eth'), accounts[0], {from: accounts[0]});
+        await registrar.register(sha3('qy'), accounts[0], {from: accounts[0]});
         assert.equal(await ens.owner('0x0'), registrar.address);
-        assert.equal(await ens.owner(namehash.hash('eth')), accounts[0]);
+        assert.equal(await ens.owner(namehash.hash('qy')), accounts[0]);
     });
 
     describe('transferring names', async () => {
 
         beforeEach(async () => {
-            await registrar.register(sha3('eth'), accounts[0], {from: accounts[0]});
+            await registrar.register(sha3('qy'), accounts[0], {from: accounts[0]});
         });
 
         it('should allow transferring name to your own', async () => {
-            await registrar.register(sha3('eth'), accounts[1], {from: accounts[0]});
-            assert.equal(await ens.owner(namehash.hash('eth')), accounts[1]);
+            await registrar.register(sha3('qy'), accounts[1], {from: accounts[0]});
+            assert.equal(await ens.owner(namehash.hash('qy')), accounts[1]);
         });
 
         it('forbids transferring the name you do not own', async () => {
-            await exceptions.expectFailure(registrar.register(sha3('eth'), accounts[1], {from: accounts[1]}));
+            await exceptions.expectFailure(registrar.register(sha3('qy'), accounts[1], {from: accounts[1]}));
         });
     });
 });

@@ -1,18 +1,18 @@
 const namehash = require('eth-ens-namehash');
 const sha3 = require('web3-utils').sha3;
 
-const ENS = artifacts.require('ENSRegistryWithFallback.sol');
+const QNS = artifacts.require('QNSRegistryWithFallback.sol');
 
-const ENSWithoutFallback = artifacts.require("ENSRegistry.sol");
+const QNSWithoutFallback = artifacts.require("QNSRegistry.sol");
 
-contract('ENSRegistryWithFallback', function (accounts) {
+contract('QNSRegistryWithFallback', function (accounts) {
 
     let old;
     let ens;
 
     beforeEach(async () => {
-        old = await ENSWithoutFallback.new();
-        ens = await ENS.new(old.address);
+        old = await QNSWithoutFallback.new();
+        ens = await QNS.new(old.address);
     });
 
     it('should allow setting the record', async () => {
@@ -41,15 +41,15 @@ contract('ENSRegistryWithFallback', function (accounts) {
 
     describe('fallback', async () => {
 
-        let hash = namehash.hash('eth');
+        let hash = namehash.hash('qy');
 
         beforeEach(async () => {
-            await old.setSubnodeOwner('0x0', sha3('eth'), accounts[0], {from: accounts[0]});
+            await old.setSubnodeOwner('0x0', sha3('qy'), accounts[0], {from: accounts[0]});
         });
 
         it('should use fallback ttl if owner not set', async () => {
-            let hash = namehash.hash('eth')
-            await old.setSubnodeOwner('0x0', sha3('eth'), accounts[0], {from: accounts[0]});
+            let hash = namehash.hash('qy')
+            await old.setSubnodeOwner('0x0', sha3('qy'), accounts[0], {from: accounts[0]});
             await old.setTTL(hash, 3600, {from: accounts[0]});
             assert.equal((await ens.ttl(hash)).toNumber(), 3600);
         });

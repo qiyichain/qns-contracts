@@ -1,4 +1,4 @@
-const ENS = artifacts.require("./ENSRegistry.sol");
+const QNS = artifacts.require("./QNSRegistry.sol");
 const FIFSRegistrar = artifacts.require('./FIFSRegistrar.sol');
 
 // Currently the parameter('./ContractName') is only used to imply
@@ -21,7 +21,7 @@ function getRootNodeFromTLD(tld) {
 }
 
 /**
- * Deploy the ENS and FIFSRegistrar
+ * Deploy the QNS and FIFSRegistrar
  *
  * @param {Object} deployer truffle deployer helper
  * @param {string} tld tld which the FIFS registrar takes charge of
@@ -29,20 +29,20 @@ function getRootNodeFromTLD(tld) {
 function deployFIFSRegistrar(deployer, tld) {
   var rootNode = getRootNodeFromTLD(tld);
 
-  // Deploy the ENS first
-  deployer.deploy(ENS)
+  // Deploy the QNS first
+  deployer.deploy(QNS)
     .then(() => {
-      // Deploy the FIFSRegistrar and bind it with ENS
-      return deployer.deploy(FIFSRegistrar, ENS.address, rootNode.namehash);
+      // Deploy the FIFSRegistrar and bind it with QNS
+      return deployer.deploy(FIFSRegistrar, QNS.address, rootNode.namehash);
     })
     .then(function() {
       // Transfer the owner of the `rootNode` to the FIFSRegistrar
-      return ENS.at(ENS.address).then((c) => c.setSubnodeOwner('0x0', rootNode.sha3, FIFSRegistrar.address));
+      return QNS.at(QNS.address).then((c) => c.setSubnodeOwner('0x0', rootNode.sha3, FIFSRegistrar.address));
     });
 }
 
 module.exports = function(deployer, network) {
-  var tld = 'eth';
+  var tld = 'qy';
 
   if (network === 'dev.fifs') {
     deployFIFSRegistrar(deployer, tld);
