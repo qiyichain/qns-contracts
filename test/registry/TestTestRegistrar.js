@@ -1,5 +1,5 @@
 const TestRegistrar = artifacts.require('./registry/TestRegistrar.sol');
-const ENS = artifacts.require('./registry/ENSRegistry.sol');
+const ENS = artifacts.require('./registry/QNSRegistry.sol');
 
 const { exceptions, evm } = require("../test-utils");
 const namehash = require('eth-ens-namehash');

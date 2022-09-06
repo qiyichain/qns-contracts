@@ -12,14 +12,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer, owner } = await getNamedAccounts()
 
   if (network.tags.legacy) {
-    const contract = await deploy('LegacyENSRegistry', {
+    const contract = await deploy('LegacyQNSRegistry', {
       from: deployer,
       args: [],
       log: true,
-      contract: await deployments.getArtifact('ENSRegistry'),
+      contract: await deployments.getArtifact('QNSRegistry'),
     })
 
-    const legacyRegistry = await ethers.getContract('LegacyENSRegistry')
+    const legacyRegistry = await ethers.getContract('LegacyQNSRegistry')
 
     const rootTx = await legacyRegistry
       .connect(await ethers.getSigner(deployer))
@@ -39,14 +39,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log(`Unsetting owner of root node (tx: ${rootTx.hash})`)
     await revertRootTx.wait()
 
-    await deploy('ENSRegistry', {
+    await deploy('QNSRegistry', {
       from: deployer,
       args: [contract.address],
       log: true,
-      contract: await deployments.getArtifact('ENSRegistryWithFallback'),
+      contract: await deployments.getArtifact('QNSRegistryWithFallback'),
     })
   } else {
-    await deploy('ENSRegistry', {
+    await deploy('QNSRegistry', {
       from: deployer,
       args: [],
       log: true,
@@ -54,7 +54,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   }
 
   if (!network.tags.use_root) {
-    const registry = await ethers.getContract('ENSRegistry')
+    const registry = await ethers.getContract('QNSRegistry')
     const rootOwner = await registry.owner(ZERO_HASH)
     switch (rootOwner) {
       case deployer:
@@ -77,6 +77,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 }
 
 func.id = 'ens'
-func.tags = ['registry', 'ENSRegistry']
+func.tags = ['registry', 'QNSRegistry']
 
 export default func

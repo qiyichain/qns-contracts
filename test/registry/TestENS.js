@@ -4,7 +4,7 @@ const sha3 = require('web3-utils').sha3;
 const { exceptions } = require("../test-utils")
 
 let contracts = [
-    [artifacts.require('./registry/ENSRegistry.sol'), 'Solidity']
+    [artifacts.require('./registry/QNSRegistry.sol'), 'Solidity']
 ];
 
 contracts.forEach(function ([ENS, lang]) {

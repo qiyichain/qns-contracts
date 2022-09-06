@@ -24,16 +24,16 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     ],
     log: true,
   };
-  const { differences } = await fetchIfDifferent('ETHRegistrarController', deployArgs);
+  const { differences } = await fetchIfDifferent('QYRegistrarController', deployArgs);
   if(!differences) return;
 
-  const controller = await deploy('ETHRegistrarController', deployArgs)
+  const controller = await deploy('QYRegistrarController', deployArgs)
 
   const tx1 = await registrar.addController(controller.address, {
     from: deployer,
   })
   console.log(
-    `Adding ETHRegistrarController as controller on BaseRegistrarImplementation (tx: ${tx1.hash})...`,
+    `Adding QYRegistrarController as controller on BaseRegistrarImplementation (tx: ${tx1.hash})...`,
   )
   await tx1.wait()
 
@@ -41,7 +41,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     from: deployer,
   })
   console.log(
-    `Adding ETHRegistrarController as a controller of NameWrapper (tx: ${tx2.hash})...`,
+    `Adding QYRegistrarController as a controller of NameWrapper (tx: ${tx2.hash})...`,
   )
   await tx2.wait()
 
@@ -49,12 +49,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     from: deployer,
   })
   console.log(
-    `Adding ETHRegistrarController as a controller of ReverseRegistrar (tx: ${tx3.hash})...`,
+    `Adding QYRegistrarController as a controller of ReverseRegistrar (tx: ${tx3.hash})...`,
   )
   await tx3.wait()
 }
 
-func.tags = ['ethregistrar', 'ETHRegistrarController']
-func.dependencies = ['ENSRegistry', 'BaseRegistrarImplementation', 'StablePriceOracle', 'ReverseRegistrar', 'NameWrapper']
+func.tags = ['ethregistrar', 'QYRegistrarController']
+func.dependencies = ['QNSRegistry', 'BaseRegistrarImplementation',  'ReverseRegistrar' ]
 
 export default func

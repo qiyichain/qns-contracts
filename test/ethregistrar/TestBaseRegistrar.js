@@ -1,4 +1,4 @@
-const ENS = artifacts.require('./registry/ENSRegistry');
+const ENS = artifacts.require('./registry/QNSRegistry');
 const BaseRegistrar = artifacts.require('./registrar/BaseRegistrarImplementation');
 
 const namehash = require('eth-ens-namehash');

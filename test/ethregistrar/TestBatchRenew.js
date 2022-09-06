@@ -1,11 +1,11 @@
-const ENS = artifacts.require('./registry/ENSRegistry')
+const ENS = artifacts.require('./registry/QNSRegistry')
 const PublicResolver = artifacts.require('./resolvers/PublicResolver')
 const BaseRegistrar = artifacts.require('./BaseRegistrarImplementation')
-const ETHRegistrarController = artifacts.require('./ETHRegistrarController')
-const DummyOracle = artifacts.require('./DummyOracle')
-const StablePriceOracle = artifacts.require('./StablePriceOracle')
-const BulkRenewal = artifacts.require('./BulkRenewal')
-const NameWrapper = artifacts.require('DummyNameWrapper.sol')
+const QYRegistrarController = artifacts.require('./QYRegistrarController')
+// const DummyOracle = artifacts.require('./DummyOracle')
+// const StablePriceOracle = artifacts.require('./StablePriceOracle')
+const BulkRenewal = artifacts.require('./BatchRenew')
+// const NameWrapper = artifacts.require('DummyNameWrapper.sol')
 
 const namehash = require('eth-ens-namehash')
 const sha3 = require('web3-utils').sha3
@@ -54,7 +54,7 @@ contract('BulkRenewal', function(accounts) {
       2,
       1,
     ])
-    controller = await ETHRegistrarController.new(
+    controller = await QYRegistrarController.new(
       baseRegistrar.address,
       priceOracle.address,
       600,

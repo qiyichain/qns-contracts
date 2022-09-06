@@ -18,7 +18,7 @@ const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 const EMPTY_BYTES =
   '0x0000000000000000000000000000000000000000000000000000000000000000'
 
-contract('ETHRegistrarController', function() {
+contract('QYRegistrarController', function() {
   let ens
   let resolver
   let resolver2 // resolver signed by accounts[1]
@@ -79,7 +79,7 @@ contract('ETHRegistrarController', function() {
     registrantAccount = await signers[1].getAddress()
     accounts = [ownerAccount, registrantAccount, signers[2].getAddress()]
 
-    ens = await deploy('ENSRegistry')
+    ens = await deploy('QNSRegistry')
 
     baseRegistrar = await deploy(
       'BaseRegistrarImplementation',
@@ -107,7 +107,7 @@ contract('ETHRegistrarController', function() {
       1,
     ])
     controller = await deploy(
-      'ETHRegistrarController',
+      'QYRegistrarController',
       baseRegistrar.address,
       priceOracle.address,
       600,
@@ -207,7 +207,7 @@ contract('ETHRegistrarController', function() {
 
   it('should revert when not enough ether is transferred', async () => {
     await expect(registerName('newname', { value: 0 })).to.be.revertedWith(
-      'ETHRegistrarController: Not enough ether provided'
+      'QYRegistrarController: Not enough ether provided'
     )
   })
 
@@ -323,7 +323,7 @@ contract('ETHRegistrarController', function() {
         0
       )
     ).to.be.revertedWith(
-      'ETHRegistrarController: resolver is required when data is supplied'
+      'QYRegistrarController: resolver is required when data is supplied'
     )
   })
 
@@ -434,7 +434,7 @@ contract('ETHRegistrarController', function() {
         0,
         { value: BUFFERED_REGISTRATION_COST }
       )
-    ).to.be.revertedWith('ETHRegistrarController: Failed to set Record')
+    ).to.be.revertedWith('QYRegistrarController: Failed to set Record')
   })
 
   it('should not permit new registrations with records updating a different name', async () => {
@@ -480,7 +480,7 @@ contract('ETHRegistrarController', function() {
         { value: BUFFERED_REGISTRATION_COST }
       )
     ).to.be.revertedWith(
-      'ETHRegistrarController: Namehash on record do not match the name being registered'
+      'QYRegistrarController: Namehash on record do not match the name being registered'
     )
   })
 
@@ -535,7 +535,7 @@ contract('ETHRegistrarController', function() {
         { value: BUFFERED_REGISTRATION_COST }
       )
     ).to.be.revertedWith(
-      'ETHRegistrarController: Namehash on record do not match the name being registered'
+      'QYRegistrarController: Namehash on record do not match the name being registered'
     )
   })
 
@@ -658,7 +658,7 @@ contract('ETHRegistrarController', function() {
           value: BUFFERED_REGISTRATION_COST,
         }
       )
-    ).to.be.revertedWith('ETHRegistrarController: Name is unavailable')
+    ).to.be.revertedWith('QYRegistrarController: Name is unavailable')
   })
 
   it('should reject for expired commitments', async () => {
@@ -692,7 +692,7 @@ contract('ETHRegistrarController', function() {
           value: BUFFERED_REGISTRATION_COST,
         }
       )
-    ).to.be.revertedWith('ETHRegistrarController: Commitment has expired')
+    ).to.be.revertedWith('QYRegistrarController: Commitment has expired')
   })
 
   it('should allow anyone to renew a name', async () => {

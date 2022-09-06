@@ -33,20 +33,20 @@ async function main(a) {
     } = parsedFile
     if(!(registryAddress && registrarAddress && wrapperAddress && resolverAddress)){
       throw('Set addresses on .env')
-    } 
+    }
     console.log("Account balance:", (await deployer.getBalance()).toString())
     console.log({
       registryAddress,registrarAddress, wrapperAddress, resolverAddress,firstAddress, name
     })
-    const EnsRegistry = await (await ethers.getContractFactory("ENSRegistry")).attach(registryAddress)
+    const QnsRegistry = await (await ethers.getContractFactory("QNSRegistry")).attach(registryAddress)
     const BaseRegistrar = await (await ethers.getContractFactory("BaseRegistrarImplementation")).attach(registrarAddress)
     const NameWrapper = await (await ethers.getContractFactory("NameWrapper")).attach(wrapperAddress)
     const Resolver = await (await ethers.getContractFactory("PublicResolver")).attach(resolverAddress)
     const domain = `${name}.eth`
     const namehashedname = namehash(domain)
-    
+
     await (await BaseRegistrar.setApprovalForAll(NameWrapper.address, true)).wait()
-    await (await EnsRegistry.setApprovalForAll(NameWrapper.address, true)).wait()
+    await (await QnsRegistry.setApprovalForAll(NameWrapper.address, true)).wait()
     await (await NameWrapper.wrapETH2LD(name, firstAddress, CAN_DO_EVERYTHING)).wait()
     console.log(`Wrapped NFT for ${domain} is available at ${getOpenSeaUrl(NameWrapper.address, namehashedname)}`)
     await (await NameWrapper.setSubnodeOwnerAndWrap(namehash(`${name}.eth`), 'sub1', firstAddress, CAN_DO_EVERYTHING)).wait()
@@ -58,7 +58,7 @@ async function main(a) {
     await (await NameWrapper.burnFuses(namehash(`sub2.${name}.eth`),CANNOT_SET_RESOLVER)).wait()
     await (await NameWrapper.unwrap(namehash(`${name}.eth`), labelhash('sub1'), firstAddress)).wait()
   }
-  
+
   main()
     .then(() => process.exit(0))
     .catch(error => {

@@ -7,9 +7,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy, fetchIfDifferent } = deployments
   const { deployer } = await getNamedAccounts()
 
-  const registry = await ethers.getContract('ENSRegistry')
+  const registry = await ethers.getContract('QNSRegistry')
   const nameWrapper = await ethers.getContract('NameWrapper')
-  const controller = await ethers.getContract('ETHRegistrarController')
+  const controller = await ethers.getContract('QYRegistrarController')
   const reverseRegistrar = await ethers.getContract('ReverseRegistrar')
 
   const deployArgs = {
@@ -38,6 +38,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 func.id = 'resolver'
 func.tags = ['resolvers', 'PublicResolver']
-func.dependencies = ['registry', 'ETHRegistrarController', 'NameWrapper', 'ReverseRegistrar']
+func.dependencies = ['registry', 'QYRegistrarController', 'ReverseRegistrar']
 
 export default func

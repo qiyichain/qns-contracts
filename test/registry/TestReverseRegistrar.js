@@ -2,8 +2,8 @@ const namehash = require('eth-ens-namehash')
 const sha3 = require('web3-utils').sha3
 const PublicResolver = artifacts.require('./resolvers/PublicResolver.sol')
 const ReverseRegistrar = artifacts.require('./registry/ReverseRegistrar.sol')
-const ENS = artifacts.require('./registry/ENSRegistry.sol')
-const NameWrapper = artifacts.require('DummyNameWrapper.sol')
+const ENS = artifacts.require('./registry/QNSRegistry.sol')
+// const NameWrapper = artifacts.require('DummyNameWrapper.sol')
 const { ethers } = require('hardhat')
 const {
   exceptions,

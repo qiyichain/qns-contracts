@@ -1,6 +1,6 @@
-const ENS = artifacts.require('./registry/ENSRegistry.sol')
+const ENS = artifacts.require('./registry/QNSRegistry.sol')
 const PublicResolver = artifacts.require('PublicResolver.sol')
-const NameWrapper = artifacts.require('DummyNameWrapper.sol')
+// const NameWrapper = artifacts.require('DummyNameWrapper.sol')
 
 const namehash = require('eth-ens-namehash')
 const sha3 = require('web3-utils').sha3
