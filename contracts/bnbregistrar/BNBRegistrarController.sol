@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
-import "./PriceOracle.sol";
+// import "./PriceOracle.sol";
 import "./BaseRegistrarImplementation.sol";
 import "./StringUtils.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -38,7 +38,6 @@ contract BNBRegistrarController is Ownable {
         );
 
     BaseRegistrarImplementation base;
-    PriceOracle prices;
     uint256 public minCommitmentAge;
     uint256 public maxCommitmentAge;
 
@@ -57,18 +56,15 @@ contract BNBRegistrarController is Ownable {
         uint256 cost,
         uint256 expires
     );
-    event NewPriceOracle(address indexed oracle);
 
     constructor(
         BaseRegistrarImplementation _base,
-        PriceOracle _prices,
         uint256 _minCommitmentAge,
         uint256 _maxCommitmentAge
     )  {
         require(_maxCommitmentAge > _minCommitmentAge);
 
         base = _base;
-        prices = _prices;
         minCommitmentAge = _minCommitmentAge;
         maxCommitmentAge = _maxCommitmentAge;
     }
@@ -82,13 +78,13 @@ contract BNBRegistrarController is Ownable {
         return true;
     }
 
-    function rentPrice(string memory name, uint256 duration)
+    function rentPrice(string memory name_, uint256 duration_)
         public
-        view
+        pure
         returns (uint256)
     {
-        bytes32 hash = keccak256(bytes(name));
-        return prices.price(name, base.nameExpires(uint256(hash)), duration);
+        uint256 price = 10 ether;
+        return price;
     }
 
     function valid(string memory name) public pure returns (bool) {
@@ -231,10 +227,6 @@ contract BNBRegistrarController is Ownable {
         emit NameRenewed(name, label, cost, expires);
     }
 
-    function setPriceOracle(PriceOracle _prices) public onlyOwner {
-        prices = _prices;
-        emit NewPriceOracle(address(prices));
-    }
 
     function setCommitmentAges(
         uint256 _minCommitmentAge,
