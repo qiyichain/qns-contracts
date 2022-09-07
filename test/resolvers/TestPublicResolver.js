@@ -55,8 +55,8 @@ contract('PublicResolver', function(accounts) {
       assert.equal(await resolver.supportsInterface('0xc8690233'), true) // IPubkeyResolver
       assert.equal(await resolver.supportsInterface('0x59d1d43c'), true) // ITextResolver
       assert.equal(await resolver.supportsInterface('0xbc1c58d1'), true) // IContentHashResolver
-      assert.equal(await resolver.supportsInterface('0xa8fa5682'), true) // IDNSRecordResolver
-      assert.equal(await resolver.supportsInterface('0x5c98042b'), true) // IDNSZoneResolver
+    //   assert.equal(await resolver.supportsInterface('0xa8fa5682'), true) // IDNSRecordResolver
+    //   assert.equal(await resolver.supportsInterface('0x5c98042b'), true) // IDNSZoneResolver
       assert.equal(await resolver.supportsInterface('0x01ffc9a7'), true) // IInterfaceResolver
     })
 
