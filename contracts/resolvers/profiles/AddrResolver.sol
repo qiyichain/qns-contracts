@@ -7,7 +7,7 @@ import "./IAddressResolver.sol";
 import "hardhat/console.sol";
 
 abstract contract AddrResolver is IAddrResolver, IAddressResolver, ResolverBase {
-    uint constant private COIN_TYPE_QYC = 2285;
+    uint constant private COIN_TYPE_QYC = 60;
 
     mapping(bytes32=>mapping(uint=>bytes)) _addresses;
 
@@ -21,8 +21,6 @@ abstract contract AddrResolver is IAddrResolver, IAddressResolver, ResolverBase 
      */
     function setAddr(bytes32 node, address a) virtual external authorised(node) {
         setAddr(node, COIN_TYPE_QYC, addressToBytes(a));
-
-
     }
 
     /**
@@ -31,7 +29,7 @@ abstract contract AddrResolver is IAddrResolver, IAddressResolver, ResolverBase 
      * @return The associated address.
      */
     function addr(bytes32 node) virtual override public view returns (address payable) {
-        console.log("&&&&&&&&&&&==AddrResolver==>%d", counter);
+        // console.log("&&&&&&&&&&&==AddrResolver==>%d", counter);
         bytes memory a = addr(node, COIN_TYPE_QYC);
         if(a.length == 0) {
             return payable(0);
