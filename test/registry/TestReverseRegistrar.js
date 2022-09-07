@@ -22,19 +22,19 @@ function assertReverseClaimedEventEmitted(tx, addr, node) {
 contract('ReverseRegistrar', function(accounts) {
   let node, node2, node3, dummyOwnableReverseNode
 
-  let reverseRegistrar, resolver, ens, nameWrapper, dummyOwnable, defaultResolver
+  let reverseRegistrar, resolver, qns, nameWrapper, dummyOwnable, defaultResolver
 
   beforeEach(async () => {
     node = getReverseNode(accounts[0])
     node2 = getReverseNode(accounts[1])
     node3 = getReverseNode(accounts[2])
-    ens = await QNS.new()
+    qns = await QNS.new()
     // nameWrapper = await NameWrapper.new()
 
     resolver = await PublicResolver.new(
-      ens.address,
+      qns.address,
     )
-    reverseRegistrar = await ReverseRegistrar.new(ens.address, resolver.address)
+    reverseRegistrar = await ReverseRegistrar.new(qns.address, resolver.address)
 
     // await reverseRegistrar.setDefaultResolver(resolver.address)
     defaultResolver = new ethers.Contract(
@@ -42,13 +42,13 @@ contract('ReverseRegistrar', function(accounts) {
       PublicResolver.abi,
       ethers.provider
     )
-    dummyOwnable = await ReverseRegistrar.new(ens.address, resolver.address)
+    dummyOwnable = await ReverseRegistrar.new(qns.address, resolver.address)
     dummyOwnableReverseNode = getReverseNode(dummyOwnable.address)
 
-    await ens.setSubnodeOwner('0x0', sha3('reverse'), accounts[0], {
+    await qns.setSubnodeOwner('0x0', sha3('reverse'), accounts[0], {
       from: accounts[0],
     })
-    await ens.setSubnodeOwner(
+    await qns.setSubnodeOwner(
       namehash.hash('reverse'),
       sha3('addr'),
       reverseRegistrar.address,
@@ -63,7 +63,7 @@ contract('ReverseRegistrar', function(accounts) {
   describe('claim', () => {
     it('allows an account to claim its address', async () => {
       await reverseRegistrar.claim(accounts[1], { from: accounts[0] })
-      assert.equal(await ens.owner(node), accounts[1])
+      assert.equal(await qns.owner(node), accounts[1])
     })
 
     it('event ReverseClaimed is emitted', async () => {
@@ -82,7 +82,7 @@ contract('ReverseRegistrar', function(accounts) {
           from: accounts[0],
         }
       )
-      assert.equal(await ens.owner(node), accounts[1])
+      assert.equal(await qns.owner(node), accounts[1])
     })
 
     it('event ReverseClaimed is emitted', async () => {
@@ -106,7 +106,7 @@ contract('ReverseRegistrar', function(accounts) {
     })
 
     it('allows an authorised account to claim a different address', async () => {
-      await ens.setApprovalForAll(accounts[0], true, { from: accounts[1] })
+      await qns.setApprovalForAll(accounts[0], true, { from: accounts[1] })
       await reverseRegistrar.claimForAddr(
         accounts[1],
         accounts[2],
@@ -114,7 +114,7 @@ contract('ReverseRegistrar', function(accounts) {
           from: accounts[0],
         }
       )
-      assert.equal(await ens.owner(node2), accounts[2])
+      assert.equal(await qns.owner(node2), accounts[2])
     })
 
     it('allows a controller to claim a different address', async () => {
@@ -126,7 +126,7 @@ contract('ReverseRegistrar', function(accounts) {
           from: accounts[0],
         }
       )
-      assert.equal(await ens.owner(node2), accounts[2])
+      assert.equal(await qns.owner(node2), accounts[2])
     })
 
     it('allows an owner() of a contract to claim the reverse node of that contract', async () => {
@@ -138,7 +138,7 @@ contract('ReverseRegistrar', function(accounts) {
           from: accounts[0],
         }
       )
-      assert.equal(await ens.owner(dummyOwnableReverseNode), accounts[0])
+      assert.equal(await qns.owner(dummyOwnableReverseNode), accounts[0])
     })
   })
 
@@ -147,8 +147,8 @@ contract('ReverseRegistrar', function(accounts) {
       await reverseRegistrar.claimWithResolver(accounts[1], accounts[2], {
         from: accounts[0],
       })
-      assert.equal(await ens.owner(node), accounts[1])
-      assert.equal(await ens.resolver(node), accounts[2])
+      assert.equal(await qns.owner(node), accounts[1])
+      assert.equal(await qns.resolver(node), accounts[2])
     })
 
     it('event ReverseClaimed is emitted', async () => {
@@ -162,7 +162,7 @@ contract('ReverseRegistrar', function(accounts) {
   describe('setName', () => {
     it('sets name records', async () => {
       await reverseRegistrar.setName('testname', { from: accounts[0] })
-      assert.equal(await ens.resolver(node), defaultResolver.address)
+      assert.equal(await qns.resolver(node), defaultResolver.address)
       assert.equal(await defaultResolver.name(node), 'testname')
     })
 
@@ -185,7 +185,7 @@ contract('ReverseRegistrar', function(accounts) {
           from: accounts[0],
         }
       )
-      assert.equal(await ens.resolver(node2), resolver.address)
+      assert.equal(await qns.resolver(node2), resolver.address)
       assert.equal(await resolver.name(node2), 'testname')
     })
 
@@ -223,12 +223,12 @@ contract('ReverseRegistrar', function(accounts) {
           from: accounts[0],
         }
       )
-      assert.equal(await ens.resolver(node), resolver.address)
+      assert.equal(await qns.resolver(node), resolver.address)
       assert.equal(await resolver.name(node), 'testname')
     })
 
     it('allows name to be set for an address if the sender is authorised', async () => {
-      ens.setApprovalForAll(accounts[1], true, { from: accounts[0] })
+      qns.setApprovalForAll(accounts[1], true, { from: accounts[0] })
       await reverseRegistrar.setNameForAddr(
         accounts[0],
         accounts[0],
@@ -237,7 +237,7 @@ contract('ReverseRegistrar', function(accounts) {
           from: accounts[1],
         }
       )
-      assert.equal(await ens.resolver(node), resolver.address)
+      assert.equal(await qns.resolver(node), resolver.address)
       assert.equal(await resolver.name(node), 'testname')
     })
 
@@ -250,7 +250,7 @@ contract('ReverseRegistrar', function(accounts) {
           from: accounts[0],
         }
       )
-      assert.equal(await ens.owner(dummyOwnableReverseNode), accounts[0])
+      assert.equal(await qns.owner(dummyOwnableReverseNode), accounts[0])
       assert.equal(
         await resolver.name(dummyOwnableReverseNode),
         'dummyownable.eth'

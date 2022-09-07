@@ -1,6 +1,6 @@
 const BaseRegistrar = require('./build/contracts/BaseRegistrar')
 const BaseRegistrarImplementation = require('./build/contracts/BaseRegistrarImplementation')
-const BulkRenewal = require('./build/contracts/BulkRenewal')
+const BatchRenew = require('./build/contracts/BatchRenew')
 const QNS = require('./build/contracts/QNS')
 const QNSRegistry = require('./build/contracts/QNSRegistry')
 // const ExponentialPremiumPriceOracle = require('./build/contracts/ExponentialPremiumPriceOracle')
@@ -29,11 +29,11 @@ const TestRegistrar = require('./build/contracts/TestRegistrar')
 module.exports = {
   BaseRegistrar,
   BaseRegistrarImplementation,
-  BulkRenewal,
-  ENS,
+  BatchRenew,
+  QNS,
   QNSRegistry,
   ExponentialPremiumPriceOracle,
-  ETHRegistrarController,
+  QYRegistrarController,
   FIFSRegistrar,
   LinearPremiumPriceOracle,
   PriceOracle,

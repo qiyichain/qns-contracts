@@ -1,4 +1,4 @@
-const ENS = artifacts.require('./registry/QNSRegistry.sol')
+const QNS = artifacts.require('./registry/QNSRegistry.sol')
 const PublicResolver = artifacts.require('PublicResolver.sol')
 // const NameWrapper = artifacts.require('DummyNameWrapper.sol')
 
@@ -11,16 +11,16 @@ const QY_LABLE = 'qy'
 
 contract('PublicResolver', function(accounts) {
   let node
-  let ens, resolver
+  let qns, resolver
   const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000'
 
   beforeEach(async () => {
     node = namehash.hash('qy')
-    ens = await ENS.new()
+    qns = await QNS.new()
     resolver = await PublicResolver.new(
-      ens.address,
+      qns.address,
     )
-    await ens.setSubnodeOwner('0x0', sha3(QY_LABLE), accounts[0], {
+    await qns.setSubnodeOwner('0x0', sha3(QY_LABLE), accounts[0], {
       from: accounts[0],
     })
   })
@@ -973,8 +973,8 @@ contract('PublicResolver', function(accounts) {
     })
 
     it('returns 0 on fallback when target contract does not support implementsInterface', async () => {
-      // Set addr to the ENS registry, which doesn't implement supportsInterface.
-      await resolver.methods['setAddr(bytes32,address)'](node, ens.address, {
+      // Set addr to the QNS registry, which doesn't implement supportsInterface.
+      await resolver.methods['setAddr(bytes32,address)'](node, qns.address, {
         from: accounts[0],
       })
       // Check the ID for `supportsInterface(bytes4)`
@@ -1013,7 +1013,7 @@ contract('PublicResolver', function(accounts) {
         from: accounts[0],
       })
       assert.equal(
-        await resolver.isApprovedForAll(await ens.owner(node), accounts[1]),
+        await resolver.isApprovedForAll(await qns.owner(node), accounts[1]),
         true
       )
       await resolver.methods['setAddr(bytes32,address)'](node, accounts[1], {
@@ -1050,7 +1050,7 @@ contract('PublicResolver', function(accounts) {
       await resolver.setApprovalForAll(accounts[2], true, {
         from: accounts[1],
       })
-      await ens.setOwner(node, accounts[1], { from: accounts[0] })
+      await qns.setOwner(node, accounts[1], { from: accounts[0] })
 
       await resolver.methods['setAddr(bytes32,address)'](node, accounts[0], {
         from: accounts[2],
@@ -1085,14 +1085,14 @@ contract('PublicResolver', function(accounts) {
     })
 
     it('permits name wrapper owner to make changes if owner is set to name wrapper address', async () => {
-      var owner = await ens.owner(node)
+      var owner = await qns.owner(node)
       var operator = accounts[2]
       await exceptions.expectFailure(
         resolver.methods['setAddr(bytes32,address)'](node, owner, {
           from: operator,
         })
       )
-      await ens.setOwner(node, owner, { from: owner })
+      await qns.setOwner(node, owner, { from: owner })
       await expect(
         resolver.methods['setAddr(bytes32,address)'](node, owner, {
           from: operator,
