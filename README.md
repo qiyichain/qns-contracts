@@ -13,9 +13,8 @@ import {
   BaseRegistrar,
   BaseRegistrarImplementation,
   BulkRenewal,
-  ENS,
-  ENSRegistry,
-  ENSRegistryWithFallback,
+  QNS,
+  QNSRegistry,
   ETHRegistrarController,
   FIFSRegistrar,
   LinearPremiumPriceOracle,
@@ -159,6 +158,10 @@ yarn
 
 ```
 yarn test
+
+
+# single file test
+npx hardhat test ./test/ethregistrar/TestBatchRenew.js   --network hardhat
 ```
 
 ### How to publish
