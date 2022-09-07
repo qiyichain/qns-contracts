@@ -40,9 +40,10 @@ contract QYRegistrarController is Ownable {
                 )
         );
 
-    BaseRegistrarImplementation base;
+    BaseRegistrarImplementation public base;
     uint256 public minCommitmentAge;
     uint256 public maxCommitmentAge;
+    Resolver public defaultResolver;
 
     mapping(bytes32 => uint256) public commitments;
 
@@ -62,6 +63,7 @@ contract QYRegistrarController is Ownable {
 
     constructor(
         BaseRegistrarImplementation _base,
+        Resolver _defaultResolver,
         uint256 _minCommitmentAge,
         uint256 _maxCommitmentAge
     )  {
@@ -70,6 +72,7 @@ contract QYRegistrarController is Ownable {
         base = _base;
         minCommitmentAge = _minCommitmentAge;
         maxCommitmentAge = _maxCommitmentAge;
+        defaultResolver = _defaultResolver;
     }
 
     function check(string memory name) public pure returns (bool) {
@@ -107,14 +110,14 @@ contract QYRegistrarController is Ownable {
         string memory name,
         address owner,
         bytes32 secret
-    ) public pure returns (bytes32) {
+    ) public view returns (bytes32) {
         return
             makeCommitmentWithConfig(
                 name,
                 owner,
                 secret,
-                address(0),
-                address(0)
+                address(defaultResolver), // yqq(2022-09-07), we set PublicResolver as default resolver
+                owner  // yqq(2022-09-07): resolve to itself as default
             );
     }
 
@@ -160,8 +163,8 @@ contract QYRegistrarController is Ownable {
             owner,
             duration,
             secret,
-            address(0),
-            address(0)
+            address(defaultResolver), // yqq(2022-09-07), we set PublicResolver as default resolver
+            owner  // yqq(2022-09-07): resolve to itself as default
         );
     }
 

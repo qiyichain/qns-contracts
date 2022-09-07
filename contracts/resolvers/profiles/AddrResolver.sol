@@ -4,11 +4,14 @@ pragma solidity >=0.8.4;
 import "../ResolverBase.sol";
 import "./IAddrResolver.sol";
 import "./IAddressResolver.sol";
+import "hardhat/console.sol";
 
 abstract contract AddrResolver is IAddrResolver, IAddressResolver, ResolverBase {
-    uint constant private COIN_TYPE_BNB = 60;
+    uint constant private COIN_TYPE_QYC = 2285;
 
     mapping(bytes32=>mapping(uint=>bytes)) _addresses;
+
+    uint public counter = 0;
 
     /**
      * Sets the address associated with an QNS node.
@@ -17,7 +20,9 @@ abstract contract AddrResolver is IAddrResolver, IAddressResolver, ResolverBase 
      * @param a The address to set.
      */
     function setAddr(bytes32 node, address a) virtual external authorised(node) {
-        setAddr(node, COIN_TYPE_BNB, addressToBytes(a));
+        setAddr(node, COIN_TYPE_QYC, addressToBytes(a));
+
+
     }
 
     /**
@@ -26,7 +31,8 @@ abstract contract AddrResolver is IAddrResolver, IAddressResolver, ResolverBase 
      * @return The associated address.
      */
     function addr(bytes32 node) virtual override public view returns (address payable) {
-        bytes memory a = addr(node, COIN_TYPE_BNB);
+        console.log("&&&&&&&&&&&==AddrResolver==>%d", counter);
+        bytes memory a = addr(node, COIN_TYPE_QYC);
         if(a.length == 0) {
             return payable(0);
         }
@@ -35,10 +41,12 @@ abstract contract AddrResolver is IAddrResolver, IAddressResolver, ResolverBase 
 
     function setAddr(bytes32 node, uint coinType, bytes memory a) virtual public authorised(node) {
         emit AddressChanged(node, coinType, a);
-        if(coinType == COIN_TYPE_BNB) {
+        if(coinType == COIN_TYPE_QYC) {
             emit AddrChanged(node, bytesToAddress(a));
         }
         _addresses[node][coinType] = a;
+
+        counter += 1;
     }
 
     function addr(bytes32 node, uint coinType) virtual override public view returns(bytes memory) {
