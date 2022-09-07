@@ -5,7 +5,6 @@ pragma experimental ABIEncoderV2;
 import "../registry/QNS.sol";
 import "./QYRegistrarController.sol";
 import "../resolvers/Resolver.sol";
-import "hardhat/console.sol";
 
 
 contract BatchRenew {
@@ -24,15 +23,12 @@ contract BatchRenew {
     }
 
     function getController() public view returns(QYRegistrarController) {
-        console.log("getController===11===%s", address(qns.resolver(QY_NAMEHASH)));
         Resolver r = Resolver(qns.resolver(QY_NAMEHASH));
-        console.log("getController====22==%s", address(r.interfaceImplementer(QY_NAMEHASH, REGISTRAR_CONTROLLER_ID)));
         return QYRegistrarController(r.interfaceImplementer(QY_NAMEHASH, REGISTRAR_CONTROLLER_ID));
     }
 
     function rentPrice(string[] calldata names, uint duration) external view returns(uint) {
         QYRegistrarController controller = getController();
-        console.log("xxxxxxxxxxxxxx: %s ====", address(controller));
         uint total = 0;
         for(uint i = 0; i < names.length; i++) {
             total += controller.rentPrice(names[i], duration);

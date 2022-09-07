@@ -5,7 +5,6 @@ import "./BaseRegistrarImplementation.sol";
 import "../utils/StringUtils.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../resolvers/Resolver.sol";
-import "hardhat/console.sol";
 
 /**
  * @dev A registrar controller for registering and renewing names at fixed cost.

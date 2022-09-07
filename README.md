@@ -158,6 +158,10 @@ yarn
 
 ```
 yarn test
+
+
+# single file test
+npx hardhat test ./test/ethregistrar/TestBatchRenew.js   --network hardhat
 ```
 
 ### How to publish

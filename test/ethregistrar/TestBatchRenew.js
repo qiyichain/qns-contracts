@@ -79,6 +79,7 @@ contract('BatchRenew', function(accounts) {
   })
 
 
+
   it('should return the cost of a bulk renewal', async () => {
     assert.equal(
       await batchRenew.rentPrice(['test1', 'test2'], 86400),
