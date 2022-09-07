@@ -7,21 +7,21 @@ let contracts = [
     [artifacts.require('./registry/QNSRegistry.sol'), 'Solidity']
 ];
 
-contracts.forEach(function ([ENS, lang]) {
-    contract('ENS ' + lang, function (accounts) {
+contracts.forEach(function ([QNS, lang]) {
+    contract('QNS ' + lang, function (accounts) {
 
-        let ens;
+        let qns;
 
         beforeEach(async () => {
-            ens = await ENS.new();
+            qns = await QNS.new();
         });
 
         it('should allow ownership transfers', async () => {
             let addr = '0x0000000000000000000000000000000000001234';
 
-            let result = await ens.setOwner('0x0', addr, {from: accounts[0]});
+            let result = await qns.setOwner('0x0', addr, {from: accounts[0]});
 
-            assert.equal(await ens.owner('0x0'), addr)
+            assert.equal(await qns.owner('0x0'), addr)
 
             assert.equal(result.logs.length, 1);
             let args = result.logs[0].args;
@@ -31,16 +31,16 @@ contracts.forEach(function ([ENS, lang]) {
 
         it('should prohibit transfers by non-owners', async () => {
             await exceptions.expectFailure(
-                ens.setOwner('0x1', '0x0000000000000000000000000000000000001234', {from: accounts[0]})
+                qns.setOwner('0x1', '0x0000000000000000000000000000000000001234', {from: accounts[0]})
             );
         });
 
         it('should allow setting resolvers', async () => {
             let addr = '0x0000000000000000000000000000000000001234'
 
-            let result = await ens.setResolver('0x0', addr, {from: accounts[0]});
+            let result = await qns.setResolver('0x0', addr, {from: accounts[0]});
 
-            assert.equal(await ens.resolver('0x0'), addr);
+            assert.equal(await qns.resolver('0x0'), addr);
 
             assert.equal(result.logs.length, 1);
             let args = result.logs[0].args;
@@ -50,14 +50,14 @@ contracts.forEach(function ([ENS, lang]) {
 
         it('should prevent setting resolvers by non-owners', async () => {
             await exceptions.expectFailure(
-                ens.setResolver('0x1', '0x0000000000000000000000000000000000001234', {from: accounts[0]})
+                qns.setResolver('0x1', '0x0000000000000000000000000000000000001234', {from: accounts[0]})
             );
         });
 
         it('should allow setting the TTL', async () => {
-            let result = await ens.setTTL('0x0', 3600, {from: accounts[0]});
+            let result = await qns.setTTL('0x0', 3600, {from: accounts[0]});
 
-            assert.equal((await ens.ttl('0x0')).toNumber(), 3600);
+            assert.equal((await qns.ttl('0x0')).toNumber(), 3600);
 
             assert.equal(result.logs.length, 1);
             let args = result.logs[0].args;
@@ -66,13 +66,13 @@ contracts.forEach(function ([ENS, lang]) {
         });
 
         it('should prevent setting the TTL by non-owners', async () => {
-            await exceptions.expectFailure(ens.setTTL('0x1', 3600, {from: accounts[0]}));
+            await exceptions.expectFailure(qns.setTTL('0x1', 3600, {from: accounts[0]}));
         });
 
         it('should allow the creation of subnodes', async () => {
-            let result = await ens.setSubnodeOwner('0x0', sha3('eth'), accounts[1], {from: accounts[0]});
+            let result = await qns.setSubnodeOwner('0x0', sha3('eth'), accounts[1], {from: accounts[0]});
 
-            assert.equal(await ens.owner(namehash.hash('eth')), accounts[1]);
+            assert.equal(await qns.owner(namehash.hash('eth')), accounts[1]);
 
             assert.equal(result.logs.length, 1);
             let args = result.logs[0].args;
@@ -82,7 +82,7 @@ contracts.forEach(function ([ENS, lang]) {
         });
 
         it('should prohibit subnode creation by non-owners', async () => {
-            await exceptions.expectFailure(ens.setSubnodeOwner('0x0', sha3('eth'), accounts[1], {from: accounts[1]}));
+            await exceptions.expectFailure(qns.setSubnodeOwner('0x0', sha3('eth'), accounts[1], {from: accounts[1]}));
         });
     });
 });
