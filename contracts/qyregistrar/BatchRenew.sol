@@ -5,9 +5,11 @@ pragma experimental ABIEncoderV2;
 import "../registry/QNS.sol";
 import "./QYRegistrarController.sol";
 import "../resolvers/Resolver.sol";
+import "hardhat/console.sol";
+
 
 contract BatchRenew {
-    bytes32 constant private BNB_NAMEHASH = 0xdba5666821b22671387fe7ea11d7cc41ede85a5aa67c3e7b3d68ce6a661f389c;
+    bytes32 constant private QY_NAMEHASH = 0x89f9fa7dfb2063d526ebb3ca370e91a9a03cb631cf6aef2d77a9f61a2c1788fb;
     bytes4 constant private REGISTRAR_CONTROLLER_ID = 0x018fac06;
     bytes4 constant private INTERFACE_META_ID = bytes4(keccak256("supportsInterface(bytes4)"));
     bytes4 constant public BULK_RENEWAL_ID = bytes4(
@@ -21,16 +23,21 @@ contract BatchRenew {
         qns = _qns;
     }
 
-    function getController() internal view returns(QYRegistrarController) {
-        Resolver r = Resolver(qns.resolver(BNB_NAMEHASH));
-        return QYRegistrarController(r.interfaceImplementer(BNB_NAMEHASH, REGISTRAR_CONTROLLER_ID));
+    function getController() public view returns(QYRegistrarController) {
+        console.log("getController===11===%s", address(qns.resolver(QY_NAMEHASH)));
+        Resolver r = Resolver(qns.resolver(QY_NAMEHASH));
+        console.log("getController====22==%s", address(r.interfaceImplementer(QY_NAMEHASH, REGISTRAR_CONTROLLER_ID)));
+        return QYRegistrarController(r.interfaceImplementer(QY_NAMEHASH, REGISTRAR_CONTROLLER_ID));
     }
 
-    function rentPrice(string[] calldata names, uint duration) external view returns(uint total) {
+    function rentPrice(string[] calldata names, uint duration) external view returns(uint) {
         QYRegistrarController controller = getController();
+        console.log("xxxxxxxxxxxxxx: %s ====", address(controller));
+        uint total = 0;
         for(uint i = 0; i < names.length; i++) {
             total += controller.rentPrice(names[i], duration);
         }
+        return total;
     }
 
     function renewAll(string[] calldata names, uint duration) external payable {

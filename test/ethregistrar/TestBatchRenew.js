@@ -1,28 +1,22 @@
-const ENS = artifacts.require('./registry/QNSRegistry')
+const QNS = artifacts.require('./registry/QNSRegistry')
 const PublicResolver = artifacts.require('./resolvers/PublicResolver')
 const BaseRegistrar = artifacts.require('./BaseRegistrarImplementation')
 const QYRegistrarController = artifacts.require('./QYRegistrarController')
-// const DummyOracle = artifacts.require('./DummyOracle')
-// const StablePriceOracle = artifacts.require('./StablePriceOracle')
-const BulkRenewal = artifacts.require('./BatchRenew')
-// const NameWrapper = artifacts.require('DummyNameWrapper.sol')
+const BatchRenew = artifacts.require('./BatchRenew')
 
 const namehash = require('eth-ens-namehash')
 const sha3 = require('web3-utils').sha3
 const toBN = require('web3-utils').toBN
 const { exceptions } = require('../test-utils')
 
-const ETH_LABEL = sha3('eth')
-const ETH_NAMEHASH = namehash.hash('eth')
+const QY_LABEL = sha3('qy')
+const QY_NAMEHASH = namehash.hash('qy')
 
-contract('BulkRenewal', function(accounts) {
-  let ens
+contract('BatchRenew', function(accounts) {
+  let qns;
   let resolver
   let baseRegistrar
   let controller
-  let priceOracle
-  let bulkRenewal
-  let nameWrapper
 
   const ownerAccount = accounts[0] // Account that owns the registrar
   const registrantAccount = accounts[1] // Account that owns test names
@@ -30,57 +24,45 @@ contract('BulkRenewal', function(accounts) {
 
   before(async () => {
     // Create a registry
-    ens = await ENS.new()
+    qns = await QNS.new()
     // nameWrapper = await NameWrapper.new()
     // Create a public resolver
     resolver = await PublicResolver.new(
-      ens.address,
-      EMPTY_ADDRESS,
-      EMPTY_ADDRESS,
-      EMPTY_ADDRESS
+      qns.address
     )
 
     // Create a base registrar
-    baseRegistrar = await BaseRegistrar.new(ens.address, namehash.hash('eth'), {
+    baseRegistrar = await BaseRegistrar.new(qns.address, QY_NAMEHASH,"Qiyichain Name Service", "QNS", "https://qns.qiyichain/nft/", {
       from: ownerAccount,
     })
+    console.log('========> baseRegistrar.addres', baseRegistrar.address)
 
-    // Set up a dummy price oracle and a controller
-    const dummyOracle = await DummyOracle.new(toBN(100000000))
-    priceOracle = await StablePriceOracle.new(dummyOracle.address, [
-      0,
-      0,
-      4,
-      2,
-      1,
-    ])
     controller = await QYRegistrarController.new(
       baseRegistrar.address,
-      priceOracle.address,
       600,
       86400,
-      nameWrapper.address,
-      EMPTY_ADDRESS,
       { from: ownerAccount }
     )
+    console.log('========> controller.addres', controller.address)
     await baseRegistrar.addController(controller.address, {
       from: ownerAccount,
     })
     await baseRegistrar.addController(ownerAccount, { from: ownerAccount })
     // Create the bulk registration contract
-    bulkRenewal = await BulkRenewal.new(ens.address)
+    batchRenew = await BatchRenew.new(qns.address)
 
     // Configure a resolver for .eth and register the controller interface
     // then transfer the .eth node to the base registrar.
-    await ens.setSubnodeRecord(
+    await qns.setSubnodeRecord(
       '0x0',
-      ETH_LABEL,
+      QY_LABEL,
       ownerAccount,
       resolver.address,
       0
     )
-    await resolver.setInterface(ETH_NAMEHASH, '0xdf7ed181', controller.address)
-    await ens.setOwner(ETH_NAMEHASH, baseRegistrar.address)
+    // 0x018fac06 is COMMITMENT_CONTROLLER_ID
+    await resolver.setInterface(QY_NAMEHASH, '0x018fac06', controller.address)
+    await qns.setOwner(QY_NAMEHASH, baseRegistrar.address)
 
     // Register some names
     for (const name of ['test1', 'test2', 'test3']) {
@@ -88,26 +70,35 @@ contract('BulkRenewal', function(accounts) {
     }
   })
 
+  it('should return default rentPrice 1000', async () => {
+    assert.equal(await controller._rentPrice(), 1000)
+  })
+
+  it('should return default rentPrice 1000', async () => {
+    let x = await batchRenew.rentPrice(["xxx"], 0)
+  })
+
+
   it('should return the cost of a bulk renewal', async () => {
     assert.equal(
-      await bulkRenewal.rentPrice(['test1', 'test2'], 86400),
-      86400 * 2
+      await batchRenew.rentPrice(['test1', 'test2'], 86400),
+      2000
     )
   })
 
   it('should raise an error trying to renew a nonexistent name', async () => {
-    await exceptions.expectFailure(bulkRenewal.renewAll(['foobar'], 86400))
+    await exceptions.expectFailure(batchRenew.renewAll(['foobar'], 86400))
   })
 
   it('should permit bulk renewal of names', async () => {
     const oldExpiry = await baseRegistrar.nameExpires(sha3('test2'))
-    const tx = await bulkRenewal.renewAll(['test1', 'test2'], 86400, {
+    const tx = await batchRenew.renewAll(['test1', 'test2'], 86400, {
       value: 86401 * 2,
     })
     assert.equal(tx.receipt.status, true)
     const newExpiry = await baseRegistrar.nameExpires(sha3('test2'))
     assert.equal(newExpiry - oldExpiry, 86400)
     // Check any excess funds are returned
-    assert.equal(await web3.eth.getBalance(bulkRenewal.address), 0)
+    assert.equal(await web3.eth.getBalance(batchRenew.address), 0)
   })
 })

@@ -5,6 +5,7 @@ import "./BaseRegistrarImplementation.sol";
 import "../utils/StringUtils.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../resolvers/Resolver.sol";
+import "hardhat/console.sol";
 
 /**
  * @dev A registrar controller for registering and renewing names at fixed cost.
@@ -12,10 +13,14 @@ import "../resolvers/Resolver.sol";
 contract QYRegistrarController is Ownable {
     using StringUtils for *;
 
+    uint256 public _rentPrice  = 1000;
+
     uint256 public constant MIN_REGISTRATION_DURATION = 28 days;
 
     bytes4 private constant INTERFACE_META_ID =
         bytes4(keccak256("supportsInterface(bytes4)"));
+
+    // 0x018fac06
     bytes4 private constant COMMITMENT_CONTROLLER_ID =
         bytes4(
             keccak256("rentPrice(string,uint256)") ^
@@ -77,13 +82,17 @@ contract QYRegistrarController is Ownable {
         return true;
     }
 
+    function setRentPrice(uint256 _price) public onlyOwner {
+        require(_price > 0, "price must greater than 0");
+        _rentPrice = _price;
+    }
+
     function rentPrice(string memory name_, uint256 duration_)
         public
-        pure
+        view
         returns (uint256)
     {
-        uint256 price = 10 ether;
-        return price;
+        return _rentPrice;
     }
 
     function valid(string memory name) public pure returns (bool) {
