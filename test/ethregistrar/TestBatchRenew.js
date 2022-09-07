@@ -32,7 +32,8 @@ contract('BatchRenew', function(accounts) {
     )
 
     // Create a base registrar
-    baseRegistrar = await BaseRegistrar.new(qns.address, QY_NAMEHASH,"Qiyichain Name Service", "QNS", "https://qns.qiyichain/nft/", {
+    baseRegistrar = await BaseRegistrar.new(qns.address, QY_NAMEHASH,
+        "Qiyichain Name Service", "QNS", "https://qns.qiyichain/nft/", {
       from: ownerAccount,
     })
     console.log('========> baseRegistrar.addres', baseRegistrar.address)

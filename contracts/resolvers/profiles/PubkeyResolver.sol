@@ -13,8 +13,8 @@ abstract contract PubkeyResolver is IPubkeyResolver, ResolverBase {
     mapping(bytes32=>PublicKey) pubkeys;
 
     /**
-     * Sets the SECP256k1 public key associated with an BNS node.
-     * @param node The BNS node to query
+     * Sets the SECP256k1 public key associated with an QNS node.
+     * @param node The QNS node to query
      * @param x the X coordinate of the curve point for the public key.
      * @param y the Y coordinate of the curve point for the public key.
      */
@@ -24,9 +24,9 @@ abstract contract PubkeyResolver is IPubkeyResolver, ResolverBase {
     }
 
     /**
-     * Returns the SECP256k1 public key associated with an BNS node.
+     * Returns the SECP256k1 public key associated with an QNS node.
      * Defined in EIP 619.
-     * @param node The BNS node to query
+     * @param node The QNS node to query
      * @return x The X coordinate of the curve point for the public key.
      * @return y The Y coordinate of the curve point for the public key.
      */

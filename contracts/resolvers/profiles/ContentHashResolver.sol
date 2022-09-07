@@ -8,8 +8,8 @@ abstract contract ContentHashResolver is IContentHashResolver, ResolverBase {
     mapping(bytes32=>bytes) hashes;
 
     /**
-     * Sets the contenthash associated with an BNS node.
-     * May only be called by the owner of that node in the BNS registry.
+     * Sets the contenthash associated with an QNS node.
+     * May only be called by the owner of that node in the QNS registry.
      * @param node The node to update.
      * @param hash The contenthash to set
      */
@@ -19,8 +19,8 @@ abstract contract ContentHashResolver is IContentHashResolver, ResolverBase {
     }
 
     /**
-     * Returns the contenthash associated with an BNS node.
-     * @param node The BNS node to query.
+     * Returns the contenthash associated with an QNS node.
+     * @param node The QNS node to query.
      * @return The associated contenthash.
      */
     function contenthash(bytes32 node) virtual external override view returns (bytes memory) {

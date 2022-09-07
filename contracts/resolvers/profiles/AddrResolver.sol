@@ -11,8 +11,8 @@ abstract contract AddrResolver is IAddrResolver, IAddressResolver, ResolverBase 
     mapping(bytes32=>mapping(uint=>bytes)) _addresses;
 
     /**
-     * Sets the address associated with an BNS node.
-     * May only be called by the owner of that node in the BNS registry.
+     * Sets the address associated with an QNS node.
+     * May only be called by the owner of that node in the QNS registry.
      * @param node The node to update.
      * @param a The address to set.
      */
@@ -21,8 +21,8 @@ abstract contract AddrResolver is IAddrResolver, IAddressResolver, ResolverBase 
     }
 
     /**
-     * Returns the address associated with an BNS node.
-     * @param node The BNS node to query.
+     * Returns the address associated with an QNS node.
+     * @param node The QNS node to query.
      * @return The associated address.
      */
     function addr(bytes32 node) virtual override public view returns (address payable) {

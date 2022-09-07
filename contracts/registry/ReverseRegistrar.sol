@@ -23,7 +23,7 @@ contract ReverseRegistrar is Ownable, Controllable {
 
     /**
      * @dev Constructor
-     * @param qnsAddr The address of the BNS registry.
+     * @param qnsAddr The address of the QNS registry.
      * @param resolverAddr The address of the default reverse resolver.
      */
     constructor(QNS qnsAddr, NameResolver resolverAddr) {
@@ -51,21 +51,21 @@ contract ReverseRegistrar is Ownable, Controllable {
     }
 
     /**
-     * @dev Transfers ownership of the reverse BNS record associated with the
+     * @dev Transfers ownership of the reverse QNS record associated with the
      *      calling account.
-     * @param owner The address to set as the owner of the reverse record in BNS.
-     * @return The BNS node hash of the reverse record.
+     * @param owner The address to set as the owner of the reverse record in QNS.
+     * @return The QNS node hash of the reverse record.
      */
     function claim(address owner) public returns (bytes32) {
         return _claimWithResolver(msg.sender, owner, address(0x0));
     }
 
     /**
-     * @dev Transfers ownership of the reverse BNS record associated with the
+     * @dev Transfers ownership of the reverse QNS record associated with the
      *      calling account.
      * @param addr The reverse record to set
-     * @param owner The address to set as the owner of the reverse record in BNS.
-     * @return The BNS node hash of the reverse record.
+     * @param owner The address to set as the owner of the reverse record in QNS.
+     * @return The QNS node hash of the reverse record.
      */
     function claimForAddr(address addr, address owner)
         public
@@ -76,11 +76,11 @@ contract ReverseRegistrar is Ownable, Controllable {
     }
 
     /**
-     * @dev Transfers ownership of the reverse BNS record associated with the
+     * @dev Transfers ownership of the reverse QNS record associated with the
      *      calling account.
-     * @param owner The address to set as the owner of the reverse record in BNS.
+     * @param owner The address to set as the owner of the reverse record in QNS.
      * @param resolver The address of the resolver to set; 0 to leave unchanged.
-     * @return The BNS node hash of the reverse record.
+     * @return The QNS node hash of the reverse record.
      */
     function claimWithResolver(address owner, address resolver)
         public
@@ -90,12 +90,12 @@ contract ReverseRegistrar is Ownable, Controllable {
     }
 
     /**
-     * @dev Transfers ownership of the reverse BNS record specified with the
+     * @dev Transfers ownership of the reverse QNS record specified with the
      *      address provided
      * @param addr The reverse record to set
-     * @param owner The address to set as the owner of the reverse record in BNS.
+     * @param owner The address to set as the owner of the reverse record in QNS.
      * @param resolver The address of the resolver to set; 0 to leave unchanged.
-     * @return The BNS node hash of the reverse record.
+     * @return The QNS node hash of the reverse record.
      */
     function claimWithResolverForAddr(
         address addr,
@@ -106,11 +106,11 @@ contract ReverseRegistrar is Ownable, Controllable {
     }
 
     /**
-     * @dev Sets the `name()` record for the reverse BNS record associated with
+     * @dev Sets the `name()` record for the reverse QNS record associated with
      * the calling account. First updates the resolver to the default reverse
      * resolver if necessary.
      * @param name The name to set for this address.
-     * @return The BNS node hash of the reverse record.
+     * @return The QNS node hash of the reverse record.
      */
     function setName(string memory name) public returns (bytes32) {
         bytes32 _node = _claimWithResolver(
@@ -123,14 +123,14 @@ contract ReverseRegistrar is Ownable, Controllable {
     }
 
     /**
-     * @dev Sets the `name()` record for the reverse BNS record associated with
+     * @dev Sets the `name()` record for the reverse QNS record associated with
      * the account provided. First updates the resolver to the default reverse
      * resolver if necessary.
      * Only callable by controllers and authorised users
      * @param addr The reverse record to set
      * @param owner The owner of the reverse node
      * @param name The name to set for this address.
-     * @return The BNS node hash of the reverse record.
+     * @return The QNS node hash of the reverse record.
      */
     function setNameForAddr(
         address addr,
@@ -150,7 +150,7 @@ contract ReverseRegistrar is Ownable, Controllable {
     /**
      * @dev Returns the node hash for a given account's reverse records.
      * @param addr The address to hash
-     * @return The BNS node hash.
+     * @return The QNS node hash.
      */
     function node(address addr) public pure returns (bytes32) {
         return
