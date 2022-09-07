@@ -36,7 +36,7 @@ contract('BatchRenew', function(accounts) {
         "Qiyichain Name Service", "QNS", "https://qns.qiyichain/nft/", {
       from: ownerAccount,
     })
-    console.log('========> baseRegistrar.addres', baseRegistrar.address)
+    // console.log('========> baseRegistrar.addres', baseRegistrar.address)
 
     controller = await QYRegistrarController.new(
       baseRegistrar.address,
@@ -45,7 +45,7 @@ contract('BatchRenew', function(accounts) {
       86400,
       { from: ownerAccount }
     )
-    console.log('========> controller.addres', controller.address)
+    // console.log('========> controller.addres', controller.address)
     await baseRegistrar.addController(controller.address, {
       from: ownerAccount,
     })

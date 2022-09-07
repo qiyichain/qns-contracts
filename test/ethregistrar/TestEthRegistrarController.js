@@ -483,7 +483,7 @@ contract('QYRegistrarController', function() {
     var balanceBefore = await web3.eth.getBalance(controller.address)
     const duration = 86400
     const price = await controller.rentPrice(sha3('newname'), duration)
-    console.log("=========price is ===> ", price)
+    // console.log("=========price is ===> ", price)
 
     await controller.renew('newname', duration, { value: price })
     var newExpires = await baseRegistrar.nameExpires(sha3('newname'))
@@ -590,8 +590,8 @@ contract('QYRegistrarController', function() {
       { value: BUFFERED_REGISTRATION_COST }
     )
 
-    console.log("=====$$$$$$$$$$$==>", (await tx.wait()).gasUsed.toString())
-    console.log("=====$$$$$$$$$$$==>", (await tx.wait()).status)
+    // console.log("=====$$$$$$$$$$$==>", (await tx.wait()).gasUsed.toString())
+    // console.log("=====$$$$$$$$$$$==>", (await tx.wait()).status)
 
     expect((await tx.wait()).status).to.equal(1);
 
