@@ -13,10 +13,12 @@ const sha3 = require('web3-utils').sha3
 
 const DAYS = 24 * 60 * 60
 const REGISTRATION_TIME = 28 * DAYS
-const BUFFERED_REGISTRATION_COST = REGISTRATION_TIME + 3 * DAYS
+const BUFFERED_REGISTRATION_COST = 80000;//REGISTRATION_TIME + 3 * DAYS
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 const EMPTY_BYTES =
   '0x0000000000000000000000000000000000000000000000000000000000000000'
+
+const COST = 1000
 
 contract('QYRegistrarController', function() {
   let qns
@@ -42,13 +44,14 @@ contract('QYRegistrarController', function() {
     var commitment = await controller.makeCommitment(
       name,
       registrantAccount,
-      REGISTRATION_TIME,
+    //   REGISTRATION_TIME,
       secret,
-      NULL_ADDRESS,
-      [],
-      false,
-      0,
-      0
+    //   NULL_ADDRESS,
+    //   [],
+    //   false,
+    //   0,
+    //   0
+    // { value: 50000 }
     )
     var tx = await controller.commit(commitment)
     expect(await controller.commitments(commitment)).to.equal(
@@ -62,11 +65,11 @@ contract('QYRegistrarController', function() {
       registrantAccount,
       REGISTRATION_TIME,
       secret,
-      NULL_ADDRESS,
-      [],
-      false,
-      0,
-      0,
+    //   NULL_ADDRESS,
+    //   [],
+    //   false,
+    //   0,
+    //   0,
       txOptions
     )
 
@@ -192,14 +195,13 @@ contract('QYRegistrarController', function() {
         name,
         sha3(name),
         registrantAccount,
-        REGISTRATION_TIME,
-        0,
+        COST,
         block.timestamp + REGISTRATION_TIME
       )
 
     expect(
       (await web3.eth.getBalance(controller.address)) - balanceBefore
-    ).to.equal(REGISTRATION_TIME)
+    ).to.equal(COST)
   })
 
   it('should revert when not enough ether is transferred', async () => {
