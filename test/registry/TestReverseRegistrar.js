@@ -2,7 +2,7 @@ const namehash = require('eth-ens-namehash')
 const sha3 = require('web3-utils').sha3
 const PublicResolver = artifacts.require('./resolvers/PublicResolver.sol')
 const ReverseRegistrar = artifacts.require('./registry/ReverseRegistrar.sol')
-const ENS = artifacts.require('./registry/QNSRegistry.sol')
+const QNS = artifacts.require('./registry/QNSRegistry.sol')
 // const NameWrapper = artifacts.require('DummyNameWrapper.sol')
 const { ethers } = require('hardhat')
 const {
@@ -28,7 +28,7 @@ contract('ReverseRegistrar', function(accounts) {
     node = getReverseNode(accounts[0])
     node2 = getReverseNode(accounts[1])
     node3 = getReverseNode(accounts[2])
-    ens = await ENS.new()
+    ens = await QNS.new()
     // nameWrapper = await NameWrapper.new()
 
     resolver = await PublicResolver.new(
@@ -36,13 +36,13 @@ contract('ReverseRegistrar', function(accounts) {
     )
     reverseRegistrar = await ReverseRegistrar.new(ens.address, resolver.address)
 
-    await reverseRegistrar.setDefaultResolver(resolver.address)
+    // await reverseRegistrar.setDefaultResolver(resolver.address)
     defaultResolver = new ethers.Contract(
       await reverseRegistrar.defaultResolver(),
       PublicResolver.abi,
       ethers.provider
     )
-    dummyOwnable = await ReverseRegistrar.new(ens.address)
+    dummyOwnable = await ReverseRegistrar.new(ens.address, resolver.address)
     dummyOwnableReverseNode = getReverseNode(dummyOwnable.address)
 
     await ens.setSubnodeOwner('0x0', sha3('reverse'), accounts[0], {
@@ -77,7 +77,7 @@ contract('ReverseRegistrar', function(accounts) {
       await reverseRegistrar.claimForAddr(
         accounts[0],
         accounts[1],
-        resolver.address,
+        // resolver.address,
         {
           from: accounts[0],
         }
@@ -89,7 +89,7 @@ contract('ReverseRegistrar', function(accounts) {
       const tx = await reverseRegistrar.claimForAddr(
         accounts[0],
         accounts[1],
-        resolver.address,
+        // resolver.address,
         {
           from: accounts[0],
         }
@@ -99,7 +99,7 @@ contract('ReverseRegistrar', function(accounts) {
 
     it('forbids an account to claim another address', async () => {
       await exceptions.expectFailure(
-        reverseRegistrar.claimForAddr(accounts[1], accounts[0], resolver.address, {
+        reverseRegistrar.claimForAddr(accounts[1], accounts[0],  {
           from: accounts[0],
         })
       )
@@ -110,7 +110,6 @@ contract('ReverseRegistrar', function(accounts) {
       await reverseRegistrar.claimForAddr(
         accounts[1],
         accounts[2],
-        resolver.address,
         {
           from: accounts[0],
         }
@@ -123,7 +122,6 @@ contract('ReverseRegistrar', function(accounts) {
       await reverseRegistrar.claimForAddr(
         accounts[1],
         accounts[2],
-        resolver.address,
         {
           from: accounts[0],
         }
@@ -136,7 +134,6 @@ contract('ReverseRegistrar', function(accounts) {
       await reverseRegistrar.claimForAddr(
         dummyOwnable.address,
         accounts[0],
-        resolver.address,
         {
           from: accounts[0],
         }
@@ -183,7 +180,6 @@ contract('ReverseRegistrar', function(accounts) {
       await reverseRegistrar.setNameForAddr(
         accounts[1],
         accounts[0],
-        resolver.address,
         'testname',
         {
           from: accounts[0],
@@ -197,7 +193,6 @@ contract('ReverseRegistrar', function(accounts) {
       const tx = await reverseRegistrar.setNameForAddr(
         accounts[0],
         accounts[0],
-        resolver.address,
         'testname',
         {
           from: accounts[0],
@@ -211,7 +206,6 @@ contract('ReverseRegistrar', function(accounts) {
         reverseRegistrar.setNameForAddr(
           accounts[1],
           accounts[0],
-          resolver.address,
           'testname',
           {
             from: accounts[0],
@@ -224,7 +218,6 @@ contract('ReverseRegistrar', function(accounts) {
       await reverseRegistrar.setNameForAddr(
         accounts[0],
         accounts[0],
-        resolver.address,
         'testname',
         {
           from: accounts[0],
@@ -239,7 +232,6 @@ contract('ReverseRegistrar', function(accounts) {
       await reverseRegistrar.setNameForAddr(
         accounts[0],
         accounts[0],
-        resolver.address,
         'testname',
         {
           from: accounts[1],
@@ -253,7 +245,6 @@ contract('ReverseRegistrar', function(accounts) {
       await reverseRegistrar.setNameForAddr(
         dummyOwnable.address,
         accounts[0],
-        resolver.address,
         'dummyownable.eth',
         {
           from: accounts[0],
