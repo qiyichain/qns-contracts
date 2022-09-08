@@ -11,10 +11,11 @@ const provider = ethers.provider
 const namehash = require('eth-ens-namehash')
 const { toUnicode } = require('punycode')
 const sha3 = require('web3-utils').sha3
+const toWei = require('web3-utils').toWei
 
 const DAYS = 24 * 60 * 60
 const REGISTRATION_TIME = 28 * DAYS
-const BUFFERED_REGISTRATION_COST = 80000;//REGISTRATION_TIME + 3 * DAYS
+const BUFFERED_REGISTRATION_COST = 1000;//REGISTRATION_TIME + 3 * DAYS
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 const EMPTY_BYTES =
   '0x0000000000000000000000000000000000000000000000000000000000000000'
@@ -67,13 +68,17 @@ contract('QYRegistrarController', function() {
 
   before(async () => {
     signers = await ethers.getSigners()
+    // console.log("=======> signers[0] is ", signers[0])
+    // console.log("=======> signers[1] is ", signers[1])
+    // console.log("=======> signers[2] is ", signers[2])
+    // console.log("=======> signers[3] is ", signers[3])
     ownerAccount = await signers[0].getAddress()
     registrantAccount = await signers[1].getAddress()
-    accounts = [ownerAccount, registrantAccount, signers[2].getAddress()]
+    accounts = [ownerAccount, registrantAccount, await signers[2].getAddress()]
 
     // console.log("==================0000000======================")
-    qns = await deploy('QNSRegistry')
-    // console.log("==================1111111======================")
+    qns = await deploy('QNSRegistry' )
+    console.log("==================1111111======================")
 
     baseRegistrar = await deploy(
       'BaseRegistrarImplementation',

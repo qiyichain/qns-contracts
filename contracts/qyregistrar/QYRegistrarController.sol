@@ -12,7 +12,7 @@ import "../resolvers/Resolver.sol";
 contract QYRegistrarController is Ownable {
     using StringUtils for *;
 
-    uint256 public _rentPrice  = 1000;
+    uint256 public _rentPrice  = 1000 wei;
 
     uint256 public constant MIN_REGISTRATION_DURATION = 28 days;
 
@@ -217,10 +217,11 @@ contract QYRegistrarController is Ownable {
 
         emit NameRegistered(name, label, owner, cost, expires);
 
-        // Refund any extra payment
-        if (msg.value > cost) {
-            payable(msg.sender).transfer(msg.value - cost);
-        }
+        // note(yqq): 2022-09-08
+        // DON'T refund any extra payment, as this contract is not in B-end whitelist
+        // if (msg.value > cost) {
+        //     payable(msg.sender).transfer(msg.value - cost);
+        // }
     }
 
     function renew(string calldata name, uint256 duration) external payable {

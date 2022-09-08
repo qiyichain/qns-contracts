@@ -120,10 +120,19 @@ task('save', 'Saves a specified contract as a deployed contract')
     },
   )
 
-let real_accounts = undefined
-if (process.env.DEPLOYER_KEY) {
-  real_accounts = [process.env.DEPLOYER_KEY, process.env.OWNER_KEY || process.env.DEPLOYER_KEY]
-}
+// let real_accounts = undefined
+// if (process.env.DEPLOYER_KEY) {
+let real_accounts = [
+    '0x5ea30eea9ba9500f3601f7659f0ccace819c562456e2f745fb2555918ab32277' ,
+    '0xcfe945f87d61aa82e903804bcc32bacdf130ae47268a2f6d7a3d877cbf028ff6',
+    '0xcfe945f87d61aa82e903804bcc32bacdf130ae47268a2f6d7a3d877cbf028ff6',
+    '0xcfe945f87d61aa82e903804bcc32bacdf130ae47268a2f6d7a3d877cbf028ff6',
+    '0xcfe945f87d61aa82e903804bcc32bacdf130ae47268a2f6d7a3d877cbf028ff6',
+    '0xcfe945f87d61aa82e903804bcc32bacdf130ae47268a2f6d7a3d877cbf028ff6',
+    '0xcfe945f87d61aa82e903804bcc32bacdf130ae47268a2f6d7a3d877cbf028ff6',
+    '0xcfe945f87d61aa82e903804bcc32bacdf130ae47268a2f6d7a3d877cbf028ff6',
+]
+// }
 
 const config: HardhatUserConfig = {
   networks: {
@@ -138,24 +147,27 @@ const config: HardhatUserConfig = {
       saveDeployments: false,
       tags: ['test', 'legacy', 'use_root'],
     },
-    ropsten: {
-      url: `https://ropsten.infura.io/v3/${process.env.INFURA_ID}`,
+    testchain: {
+      url: `http://172.16.100.103:8545`,
       tags: ['test', 'legacy', 'use_root'],
-      chainId: 3,
+      chainId: 12285,
       accounts: real_accounts,
+      gas: 15000000,
+      gasPrice: 2000000000,
+      minGasPrice: 1000000000
     },
-    goerli: {
-      url: `https://goerli.infura.io/v3/${process.env.INFURA_ID}`,
-      tags: ['test', 'legacy', 'use_root'],
-      chainId: 5,
-      accounts: real_accounts,
-    },
-    mainnet: {
-      url: `https://mainnet.infura.io/v3/${process.env.INFURA_ID}`,
-      tags: ['legacy', 'use_root'],
-      chainId: 1,
-      accounts: real_accounts,
-    },
+    // goerli: {
+    //   url: `https://goerli.infura.io/v3/${process.env.INFURA_ID}`,
+    //   tags: ['test', 'legacy', 'use_root'],
+    //   chainId: 5,
+    //   accounts: real_accounts,
+    // },
+    // mainnet: {
+    //   url: `https://mainnet.infura.io/v3/${process.env.INFURA_ID}`,
+    //   tags: ['legacy', 'use_root'],
+    //   chainId: 1,
+    //   accounts: real_accounts,
+    // },
   },
   mocha: {},
   solidity: {
