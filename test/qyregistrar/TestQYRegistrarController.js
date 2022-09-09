@@ -29,9 +29,7 @@ contract('QYRegistrarController', function() {
   let baseRegistrar
   let controller
   let controller2 // controller signed by accounts[1]
-  let priceOracle
   let reverseRegistrar
-//   let nameWrapper
 
   const secret =
     '0x0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'
@@ -43,23 +41,10 @@ contract('QYRegistrarController', function() {
     name,
     txOptions = { value: BUFFERED_REGISTRATION_COST }
   ) {
-    var commitment = await controller.makeCommitment(
-      name,
-      registrantAccount,
-      secret,
-    )
-    var tx = await controller.commit(commitment)
-    expect(await controller.commitments(commitment)).to.equal(
-      (await provider.getBlock(tx.blockNumber)).timestamp
-    )
-
-    await evm.advanceTime((await controller.minCommitmentAge()).toNumber())
-
     var tx = await controller.register(
       name,
       registrantAccount,
       REGISTRATION_TIME,
-      secret,
       txOptions
     )
 
@@ -68,18 +53,10 @@ contract('QYRegistrarController', function() {
 
   before(async () => {
     signers = await ethers.getSigners()
-    // console.log("=======> signers[0] is ", signers[0])
-    // console.log("=======> signers[1] is ", signers[1])
-    // console.log("=======> signers[2] is ", signers[2])
-    // console.log("=======> signers[3] is ", signers[3])
     ownerAccount = await signers[0].getAddress()
     registrantAccount = await signers[1].getAddress()
     accounts = [ownerAccount, registrantAccount, await signers[2].getAddress()]
-
-    // console.log("==================0000000======================")
     qns = await deploy('QNSRegistry' )
-    console.log("==================1111111======================")
-
     baseRegistrar = await deploy(
       'BaseRegistrarImplementation',
       qns.address,
@@ -89,52 +66,36 @@ contract('QYRegistrarController', function() {
        "https://qns.qiyichain/nft/",
     )
 
-    // console.log("==================22222222======================")
-
     resolver = await deploy(
         'PublicResolver',
         qns.address,
       )
-    // console.log("==================3333333======================")
-
 
     reverseRegistrar = await deploy('ReverseRegistrar', qns.address, NULL_ADDRESS)
-    // console.log("==================4444444======================")
 
     await qns.setSubnodeOwner(EMPTY_BYTES, sha3('qy'), baseRegistrar.address)
-    // console.log("==================555555======================")
-
-
 
     controller = await deploy(
       'QYRegistrarController',
       baseRegistrar.address,
-      resolver.address,
-      600,
-      86400,
+      resolver.address
     )
-    // console.log("==================6666666======================")
 
     controller2 = controller.connect(signers[1])
     await baseRegistrar.addController(controller.address)
     await reverseRegistrar.setController(controller.address, true)
 
-    // console.log("==================777777======================")
-
     resolver2 = await resolver.connect(signers[1])
-    // console.log("==================888888======================")
 
     await qns.setSubnodeOwner(EMPTY_BYTES, sha3('reverse'), accounts[0], {
       from: accounts[0],
     })
-    // console.log("==================99999======================")
     await qns.setSubnodeOwner(
       namehash.hash('reverse'),
       sha3('addr'),
       reverseRegistrar.address,
       { from: accounts[0] }
     )
-    // console.log("==================10101010======================")
   })
 
   beforeEach(async () => {
@@ -212,23 +173,11 @@ contract('QYRegistrarController', function() {
   })
 
   it('should permit new registrations with resolver and records', async () => {
-    var commitment = await controller.makeCommitment(
-      'newconfigname',
-      registrantAccount,
-      secret
-    )
-    var tx = await controller.commit(commitment)
-    expect(await controller.commitments(commitment)).to.equal(
-      (await web3.eth.getBlock(tx.blockNumber)).timestamp
-    )
-
-    await evm.advanceTime((await controller.minCommitmentAge()).toNumber())
     var balanceBefore = await web3.eth.getBalance(controller.address)
     var tx = await controller.register(
       'newconfigname',
       registrantAccount,
       REGISTRATION_TIME,
-      secret,
       { value: BUFFERED_REGISTRATION_COST }
     )
 
@@ -253,142 +202,15 @@ contract('QYRegistrarController', function() {
     expect(await resolver['addr(bytes32)'](nodehash)).to.equal(
       registrantAccount
     )
-
-    // expect(await resolver['text'](nodehash, 'url')).to.equal('ethereum.com')
   })
 
-//   it('should not permit new registrations with 0 resolver', async () => {
-//     await expect(
-//       controller.makeCommitment(
-//         'newconfigname',
-//         registrantAccount,
-//         secret,
-//       )
-//     ).to.be.revertedWith(
-//       'QYRegistrarController: resolver is required when data is supplied'
-//     )
-//   })
-
-//   it('should not permit new registrations with EoA resolver', async () => {
-//     const commitment = await controller.makeCommitment(
-//       'newconfigname',
-//       registrantAccount,
-//       secret,
-//     )
-
-//     const tx = await controller.commit(commitment)
-//     expect(await controller.commitments(commitment)).to.equal(
-//       (await web3.eth.getBlock(tx.blockNumber)).timestamp
-//     )
-
-//     await evm.advanceTime((await controller.minCommitmentAge()).toNumber())
-//     await expect(
-//       controller.register(
-//         'newconfigname',
-//         registrantAccount,
-//         REGISTRATION_TIME,
-//         secret,
-
-//         { value: BUFFERED_REGISTRATION_COST }
-//       )
-//     ).to.be.revertedWith('Address: call to non-contract')
-//   })
-
-//   it('should not permit new registrations with an incompatible contract', async () => {
-//     const commitment = await controller.makeCommitment(
-//       'newconfigname',
-//       registrantAccount,
-//       secret,
-
-//     )
-
-//     const tx = await controller.commit(commitment)
-//     expect(await controller.commitments(commitment)).to.equal(
-//       (await web3.eth.getBlock(tx.blockNumber)).timestamp
-//     )
-
-//     await evm.advanceTime((await controller.minCommitmentAge()).toNumber())
-//     await expect(
-//       controller.register(
-//         'newconfigname',
-//         registrantAccount,
-//         REGISTRATION_TIME,
-//         secret,
-//         { value: BUFFERED_REGISTRATION_COST }
-//       )
-//     ).to.be.revertedWith('QYRegistrarController: Failed to set Record')
-//   })
-
-//   it('should not permit new registrations with records updating a different name', async () => {
-//     const commitment = await controller.makeCommitment(
-//       'awesome',
-//       registrantAccount,
-//       secret,
-//     )
-//     const tx = await controller.commit(commitment)
-//     expect(await controller.commitments(commitment)).to.equal(
-//       (await web3.eth.getBlock(tx.blockNumber)).timestamp
-//     )
-
-//     await evm.advanceTime((await controller.minCommitmentAge()).toNumber())
-
-//     await expect(
-//       controller.register(
-//         'awesome',
-//         registrantAccount,
-//         REGISTRATION_TIME,
-//         secret,
-//         { value: BUFFERED_REGISTRATION_COST }
-//       )
-//     ).to.be.revertedWith(
-//       'QYRegistrarController: Namehash on record do not match the name being registered'
-//     )
-//   })
-
-//   it('should not permit new registrations with any record updating a different name', async () => {
-//     const commitment = await controller.makeCommitment(
-//       'awesome',
-//       registrantAccount,
-//       secret,
-//     )
-//     const tx = await controller.commit(commitment)
-//     expect(await controller.commitments(commitment)).to.equal(
-//       (await web3.eth.getBlock(tx.blockNumber)).timestamp
-//     )
-
-//     await evm.advanceTime((await controller.minCommitmentAge()).toNumber())
-
-//     await expect(
-//       controller.register(
-//         'awesome',
-//         registrantAccount,
-//         REGISTRATION_TIME,
-//         secret,
-//         { value: BUFFERED_REGISTRATION_COST }
-//       )
-//     ).to.be.revertedWith(
-//       'QYRegistrarController: Namehash on record do not match the name being registered'
-//     )
-//   })
 
   it('should permit a registration with resolver but no records', async () => {
-    const commitment = await controller.makeCommitment(
-      'newconfigname2',
-      registrantAccount,
-      secret,
-    )
-    let tx = await controller.commit(commitment)
-    expect(await controller.commitments(commitment)).to.equal(
-      (await web3.eth.getBlock(tx.blockNumber)).timestamp
-    )
-
-    await evm.advanceTime((await controller.minCommitmentAge()).toNumber())
     const balanceBefore = await web3.eth.getBalance(controller.address)
     let tx2 = await controller.register(
       'newconfigname2',
       registrantAccount,
       REGISTRATION_TIME,
-      secret,
       { value: BUFFERED_REGISTRATION_COST }
     )
 
@@ -412,40 +234,7 @@ contract('QYRegistrarController', function() {
       ).to.equal(COST)
   })
 
-  it('should include the owner in the commitment', async () => {
-    await controller.commit(
-      await controller.makeCommitment(
-        'newname2',
-        accounts[2],
-        secret,
-      )
-    )
-
-    await evm.advanceTime((await controller.minCommitmentAge()).toNumber())
-    await expect(
-      controller.register(
-        'newname2',
-        registrantAccount,
-        REGISTRATION_TIME,
-        secret,
-        {
-          value: BUFFERED_REGISTRATION_COST,
-        }
-      )
-    ).to.be.reverted
-  })
-
   it('should reject duplicate registrations', async () => {
-    await registerName('newname')
-    await controller.commit(
-      await controller.makeCommitment(
-        'newname',
-        registrantAccount,
-        secret,
-      )
-    )
-
-    await evm.advanceTime((await controller.minCommitmentAge()).toNumber())
     expect(
       controller.register(
         'newname',
@@ -457,29 +246,6 @@ contract('QYRegistrarController', function() {
         }
       )
     ).to.be.revertedWith('QYRegistrarController: Name is unavailable')
-  })
-
-  it('should reject for expired commitments', async () => {
-    await controller.commit(
-      await controller.makeCommitment(
-        'newname2',
-        registrantAccount,
-        secret,
-      )
-    )
-
-    await evm.advanceTime((await controller.maxCommitmentAge()).toNumber() + 1)
-    expect(
-      controller.register(
-        'newname2',
-        registrantAccount,
-        REGISTRATION_TIME,
-        secret,
-        {
-          value: BUFFERED_REGISTRATION_COST,
-        }
-      )
-    ).to.be.revertedWith('QYRegistrarController: Commitment has expired')
   })
 
   it('should allow anyone to renew a name', async () => {
@@ -509,45 +275,11 @@ contract('QYRegistrarController', function() {
     expect(parseInt(await web3.eth.getBalance(controller.address))).to.equal(0)
   })
 
-    // TODO(yqq): reverse name
-//   it('should set the reverse record of the account', async () => {
-//     const commitment = await controller.makeCommitment(
-//       'reverse',
-//       registrantAccount,
-//       secret,
-//     )
-//     await controller.commit(commitment)
-
-//     await evm.advanceTime((await controller.minCommitmentAge()).toNumber())
-//     await controller.register(
-//       'reverse',
-//       registrantAccount,
-//       REGISTRATION_TIME,
-//       secret,
-//       { value: BUFFERED_REGISTRATION_COST }
-//     )
-
-//     console.log("===========registrantAccount======>", registrantAccount)
-
-//     expect(await resolver.name(getReverseNode(registrantAccount))).to.equal(
-//       'reverse.qy'
-//     )
-//   })
-
   it('should not set the reverse record of the account when set to false', async () => {
-    const commitment = await controller.makeCommitment(
-      'noreverse',
-      registrantAccount,
-      secret,
-    )
-    await controller.commit(commitment)
-
-    await evm.advanceTime((await controller.minCommitmentAge()).toNumber())
     await controller.register(
       'noreverse',
       registrantAccount,
       REGISTRATION_TIME,
-      secret,
       { value: BUFFERED_REGISTRATION_COST }
     )
 
@@ -558,21 +290,11 @@ contract('QYRegistrarController', function() {
     const label = 'other'
     const name = label + '.qy'
     const node = namehash.hash(name)
-    const commitment = await controller.makeCommitment(
-      label,
-      registrantAccount,
-      secret,
-    )
-
-    await controller.commit(commitment)
-
-    await evm.advanceTime((await controller.minCommitmentAge()).toNumber())
 
     const gasA = await controller2.estimateGas.register(
       label,
       registrantAccount,
       REGISTRATION_TIME,
-      secret,
       { value: BUFFERED_REGISTRATION_COST }
     )
 
@@ -582,8 +304,6 @@ contract('QYRegistrarController', function() {
       label,
       registrantAccount,
       REGISTRATION_TIME,
-      secret,
-
       { value: BUFFERED_REGISTRATION_COST }
     )
 
@@ -591,7 +311,6 @@ contract('QYRegistrarController', function() {
       label,
       registrantAccount,
       REGISTRATION_TIME,
-      secret,
       { value: BUFFERED_REGISTRATION_COST }
     )
 
@@ -601,9 +320,6 @@ contract('QYRegistrarController', function() {
     expect((await tx.wait()).status).to.equal(1);
 
     console.log(gasA.toString(), gasB.toString())
-
-
-
 
     expect(await resolver2['addr(bytes32)'](node)).to.equal(registrantAccount)
   })

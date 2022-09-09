@@ -19,31 +19,16 @@ contract QYRegistrarController is Ownable {
     bytes4 private constant INTERFACE_META_ID =
         bytes4(keccak256("supportsInterface(bytes4)"));
 
-    // 0x018fac06
-    bytes4 private constant COMMITMENT_CONTROLLER_ID =
-        bytes4(
+    // 0x523d5854
+    bytes4 private constant CONTROLLER_ID = bytes4(
             keccak256("rentPrice(string,uint256)") ^
                 keccak256("available(string)") ^
-                keccak256("makeCommitment(string,address,bytes32)") ^
-                keccak256("commit(bytes32)") ^
-                keccak256("register(string,address,uint256,bytes32)") ^
+                keccak256("register(string,address,uint256)") ^
                 keccak256("renew(string,uint256)")
         );
 
-    bytes4 private constant COMMITMENT_WITH_CONFIG_CONTROLLER_ID =
-        bytes4(
-            keccak256(
-                "registerWithConfig(string,address,uint256,bytes32,address,address)"
-            ) ^
-                keccak256(
-                    "makeCommitmentWithConfig(string,address,bytes32,address,address)"
-                )
-        );
-
     BaseRegistrarImplementation public base;
-    uint256 public minCommitmentAge;
-    uint256 public maxCommitmentAge;
-    Resolver public defaultResolver;
+    address public defaultResolver;
 
     mapping(bytes32 => uint256) public commitments;
 
@@ -63,16 +48,11 @@ contract QYRegistrarController is Ownable {
 
     constructor(
         BaseRegistrarImplementation _base,
-        Resolver _defaultResolver,
-        uint256 _minCommitmentAge,
-        uint256 _maxCommitmentAge
+        Resolver _defaultResolver
     )  {
-        require(_maxCommitmentAge > _minCommitmentAge);
-
         base = _base;
-        minCommitmentAge = _minCommitmentAge;
-        maxCommitmentAge = _maxCommitmentAge;
-        defaultResolver = _defaultResolver;
+        defaultResolver = address(_defaultResolver);
+        require(defaultResolver != address(0), "default resolve must be publicresolver");
     }
 
     function check(string memory name) public pure returns (bool) {
@@ -106,36 +86,6 @@ contract QYRegistrarController is Ownable {
         return valid(name) && base.available(uint256(label));
     }
 
-    function makeCommitment(
-        string memory name,
-        address owner,
-        bytes32 secret
-    ) public view returns (bytes32) {
-        return
-            makeCommitmentWithConfig(
-                name,
-                owner,
-                secret,
-                address(defaultResolver), // yqq(2022-09-07), we set PublicResolver as default resolver
-                owner  // yqq(2022-09-07): resolve to itself as default
-            );
-    }
-
-    function makeCommitmentWithConfig(
-        string memory name,
-        address owner,
-        bytes32 secret,
-        address resolver,
-        address addr
-    ) public pure returns (bytes32) {
-        bytes32 label = keccak256(bytes(name));
-        if (resolver == address(0) && addr == address(0)) {
-            return keccak256(abi.encodePacked(label, owner, secret));
-        }
-        require(resolver != address(0));
-        return
-            keccak256(abi.encodePacked(label, owner, resolver, addr, secret));
-    }
 
     function exists(bytes1 char) public pure returns (bool) {
         bytes memory charsets = bytes("abcdefghigklmnopqrstuvwxyz-0123456789");
@@ -147,43 +97,22 @@ contract QYRegistrarController is Ownable {
         return false;
     }
 
-    function commit(bytes32 commitment) public {
-        require(commitments[commitment] + maxCommitmentAge < block.timestamp);
-        commitments[commitment] = block.timestamp;
-    }
-
     function register(
-        string calldata name,
-        address owner,
-        uint256 duration,
-        bytes32 secret
-    ) external payable {
-        registerWithConfig(
-            name,
-            owner,
-            duration,
-            secret,
-            address(defaultResolver), // yqq(2022-09-07), we set PublicResolver as default resolver
-            owner  // yqq(2022-09-07): resolve to itself as default
-        );
-    }
-
-    function registerWithConfig(
         string memory name,
         address owner,
-        uint256 duration,
-        bytes32 secret,
-        address resolver,
-        address addr
-    ) public payable {
-        bytes32 commitment = makeCommitmentWithConfig(
-            name,
-            owner,
-            secret,
-            resolver,
-            addr
-        );
-        uint256 cost = _consumeCommitment(name, duration, commitment);
+        uint256 duration
+    ) external payable {
+        require(owner != address(0), "owner must not be 0");
+
+        // set defaultResolver as default resolver
+        // resolve to owner as default
+        address resolver = defaultResolver;
+        address addr = owner;
+
+        require(available(name), "Name not available");
+        uint256 cost = rentPrice(name, duration);
+        require(duration >= MIN_REGISTRATION_DURATION, "Duration too short");
+        require(msg.value >= cost, "Not enough payment");
 
         bytes32 label = keccak256(bytes(name));
         uint256 tokenId = uint256(label);
@@ -210,9 +139,6 @@ contract QYRegistrarController is Ownable {
             // Now transfer full ownership to the expeceted owner
             base.reclaim(tokenId, owner);
             base.transferFrom(address(this), owner, tokenId);
-        } else {
-            require(addr == address(0));
-            expires = base.register(tokenId, owner, duration);
         }
 
         emit NameRegistered(name, label, owner, cost, expires);
@@ -226,26 +152,19 @@ contract QYRegistrarController is Ownable {
 
     function renew(string calldata name, uint256 duration) external payable {
         uint256 cost = rentPrice(name, duration);
-        require(msg.value >= cost);
+        require(msg.value >= cost, "not enough payments");
 
         bytes32 label = keccak256(bytes(name));
         uint256 expires = base.renew(uint256(label), duration);
 
-        if (msg.value > cost) {
-            payable(msg.sender).transfer(msg.value - cost);
-        }
+        // DO NOT REFUNDS, 2022-09-09
+        // if (msg.value > cost) {
+        //     payable(msg.sender).transfer(msg.value - cost);
+        // }
 
         emit NameRenewed(name, label, cost, expires);
     }
 
-
-    function setCommitmentAges(
-        uint256 _minCommitmentAge,
-        uint256 _maxCommitmentAge
-    ) public onlyOwner {
-        minCommitmentAge = _minCommitmentAge;
-        maxCommitmentAge = _maxCommitmentAge;
-    }
 
     function withdraw() public onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
@@ -256,30 +175,6 @@ contract QYRegistrarController is Ownable {
         pure
         returns (bool)
     {
-        return
-            interfaceID == INTERFACE_META_ID ||
-            interfaceID == COMMITMENT_CONTROLLER_ID ||
-            interfaceID == COMMITMENT_WITH_CONFIG_CONTROLLER_ID;
-    }
-
-    function _consumeCommitment(
-        string memory name,
-        uint256 duration,
-        bytes32 commitment
-    ) internal returns (uint256) {
-        // Require a valid commitment
-        require(commitments[commitment] + minCommitmentAge <= block.timestamp, "Require a valid commitment");
-
-        // If the commitment is too old, or the name is registered, stop
-        require(commitments[commitment] + maxCommitmentAge > block.timestamp, "Commitment is too old, or the name is registered");
-        require(available(name), "Name not available");
-
-        delete (commitments[commitment]);
-
-        uint256 cost = rentPrice(name, duration);
-        require(duration >= MIN_REGISTRATION_DURATION, "Duration too short");
-        require(msg.value >= cost, "Not enough payment");
-
-        return cost;
+        return interfaceID == INTERFACE_META_ID || interfaceID == CONTROLLER_ID;
     }
 }
