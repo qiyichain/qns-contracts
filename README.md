@@ -32,7 +32,7 @@ import '@qiyichain/qns-contracts/contracts/registry/QNSRegistry.sol';
 import '@qiyichain/qns-contracts/contracts/registry/QNSRegistryWithFallback.sol';
 import '@qiyichain/qns-contracts/contracts/registry/ReverseRegistrar.sol';
 import '@qiyichain/qns-contracts/contracts/registry/TestRegistrar.sol';
-// EthRegistrar
+// Registrar
 import '@qiyichain/qns-contracts/contracts/ethregistrar/BaseRegistrar.sol';
 import '@qiyichain/qns-contracts/contracts/ethregistrar/BaseRegistrarImplementation.sol';
 import '@qiyichain/qns-contracts/contracts/ethregistrar/BatchNew.sol';

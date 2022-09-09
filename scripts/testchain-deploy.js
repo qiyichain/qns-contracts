@@ -4,7 +4,6 @@ const {
     contracts: { deploy },
   } = require('../test/test-utils')
 
-// const hre = require("hardhat");
 const { ethers } = require('hardhat')
 const provider = ethers.provider
 const namehash = require('eth-ens-namehash')
@@ -12,16 +11,8 @@ const { toUnicode } = require('punycode')
 const sha3 = require('web3-utils').sha3
 const toWei = require('web3-utils').toWei
 
-
-const DAYS = 24 * 60 * 60
-const REGISTRATION_TIME = 28 * DAYS
-const BUFFERED_REGISTRATION_COST = 1000;
-const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
-const EMPTY_BYTES =
-  '0x0000000000000000000000000000000000000000000000000000000000000000'
-
-const COST = 1000
-
+// const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+const ZERO_ROOT_NODE = '0x0000000000000000000000000000000000000000000000000000000000000000'
 
 async function main() {
     let signers = await ethers.getSigners()
@@ -29,8 +20,7 @@ async function main() {
     let accounts = [ownerAccount, ownerAccount, ownerAccount]
 
     qns = await deploy('QNSRegistry' )
-    console.log('QNSRegistry:', qns.address)
-    console.log("==================1111111======================")
+    console.log("✅ QNSRegistry deployed successfully!")
 
     baseRegistrar = await deploy(
         'BaseRegistrarImplementation',
@@ -41,56 +31,58 @@ async function main() {
         "https://qns.qiyichain/nft/",
     )
 
-    console.log("BaseRegistrarImplementation:",  baseRegistrar.address)
-
-    console.log("==================22222222======================")
+    console.log("✅ BaseRegistrarImplementation.sol deployed successfully!")
 
     let resolver = await deploy(
         'PublicResolver',
         qns.address,
     )
-    console.log("PublicResolver:", resolver.address)
-    console.log("==================3333333======================")
-
+    console.log("✅ PublicResolver.sol deployed successfully!")
 
     let reverseRegistrar = await deploy('ReverseRegistrar', qns.address, resolver.address, {gasLimit: 15000000})
-    console.log("ReverseRegistrar:", reverseRegistrar.address)
-    console.log("==================4444444======================")
+    console.log("✅ ReverseRegistrar.sol deployed successfully!")
 
-    let tx = await qns.setSubnodeOwner(EMPTY_BYTES, sha3('qy'), baseRegistrar.address)
-    console.log("init root node tx : ", (await tx.wait()).status )
-    console.log("==================555555======================")
+    let tx = await qns.setSubnodeOwner(ZERO_ROOT_NODE, sha3('qy'), baseRegistrar.address)
+    if( 1 == (await tx.wait()).status ) {
+        console.log("✅ setSubnodeOwner node (qy) successfully!")
+    } else {
+        console.log("😱 setSubnodeOwner failed!")
+    }
 
 
     let controller = await deploy(
         'QYRegistrarController',
         baseRegistrar.address,
-        resolver.address,
-        10,
-        1000,
+        resolver.address
     )
-    console.log("QYRegistrarController:", controller.address)
-    console.log("==================6666666======================")
+    console.log("✅ QYRegistrarController.sol deployed successfully!")
 
-    // let controller2 = controller.connect(signers[1])
     await baseRegistrar.addController(controller.address)
+    console.log("✅ baseRegistrar.addController successfully!")
     await reverseRegistrar.setController(controller.address, true)
+    console.log("✅ reverseRegistrar.setController successfully!")
 
-    console.log("==================777777======================")
-
-    // let resolver2 = await resolver.connect(signers[1])
-    console.log("==================888888======================")
-
-    await qns.setSubnodeOwner(EMPTY_BYTES, sha3('reverse'), accounts[0], {
-    from: accounts[0],
+    await qns.setSubnodeOwner(ZERO_ROOT_NODE, sha3('reverse'), accounts[0], {
+        from: accounts[0],
     })
-    console.log("==================99999======================")
+    console.log("✅ qns.setSubnodeOwner root node (reverse) successfully!")
+
     await qns.setSubnodeOwner(
         namehash.hash('reverse'),
         sha3('addr'),
         reverseRegistrar.address,
         { from: accounts[0] }
     )
+    console.log("✅ qns.setSubnodeOwner reverse root node (addr.reverse) successfully!")
+
+    console.log("============================================")
+    console.log("👇👇👇👇 All contract deployed successfully!")
+    console.log("")
+    console.log('QNSRegistry:', qns.address)
+    console.log("BaseRegistrarImplementation:",  baseRegistrar.address)
+    console.log("PublicResolver:", resolver.address)
+    console.log("ReverseRegistrar:", reverseRegistrar.address)
+    console.log("QYRegistrarController:", controller.address)
 
 }
 
