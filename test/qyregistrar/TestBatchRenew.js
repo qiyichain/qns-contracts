@@ -41,8 +41,6 @@ contract('BatchRenew', function(accounts) {
     controller = await QYRegistrarController.new(
       baseRegistrar.address,
       resolver.address,
-      600,
-      86400,
       { from: ownerAccount }
     )
     // console.log('========> controller.addres', controller.address)
