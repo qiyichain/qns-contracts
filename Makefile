@@ -17,3 +17,12 @@ clean:
 .PHONY:remix
 remix:
 	remixd -s ./ -u https://remix.ethereum.org
+
+
+
+deploy-testchain:
+	npx hardhat run scripts/testchain-deploy.js --network testchain
+
+
+registername:
+	npx hardhat run scripts/registername.js --network testchain

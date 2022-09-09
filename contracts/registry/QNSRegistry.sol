@@ -4,13 +4,16 @@ pragma solidity >=0.8.4;
 import "./QNS.sol";
 
 
-// https://bns.id
+// https://qns.qiyichain.com
 
-//   ____  _   _ ____
-//  / __ \| \ | / ___|
-// | /  \ |  \| \___ \
-// \ \__/\|  \  |___) |
-//  \____\_\_|\_|____/
+//    ____    _   _    _____
+//   / __ \  | \ | |  / ____|
+//  | |  | | |  \| | | (___
+//  | |  | | | . ` |  \___ \
+//  | |__| | | |\  |  ____) |
+//   \___\_\ |_| \_| |_____/
+
+
 
 
 /**
@@ -111,7 +114,7 @@ contract QNSRegistry is QNS {
 
     /**
      * @dev Enable or disable approval for a third party ("operator") to manage
-     *  all of `msg.sender`'s BNS records. Emits the ApprovalForAll event.
+     *  all of `msg.sender`'s QNS records. Emits the ApprovalForAll event.
      * @param operator Address to add to the set of authorized operators.
      * @param approved True if the operator is approved, false to revoke approval.
      */

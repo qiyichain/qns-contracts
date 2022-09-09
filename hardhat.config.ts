@@ -148,7 +148,7 @@ const config: HardhatUserConfig = {
       tags: ['test', 'legacy', 'use_root'],
     },
     testchain: {
-      url: `http://172.16.100.103:8545`,
+      url: `http://172.16.100.104:8545`,
       tags: ['test', 'legacy', 'use_root'],
       chainId: 12285,
       accounts: real_accounts,

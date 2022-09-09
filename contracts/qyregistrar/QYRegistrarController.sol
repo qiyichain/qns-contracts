@@ -118,28 +118,27 @@ contract QYRegistrarController is Ownable {
         uint256 tokenId = uint256(label);
 
         uint256 expires;
-        if (resolver != address(0)) {
-            // Set this contract as the (temporary) owner, giving it
-            // permission to set up the resolver.
-            expires = base.register(tokenId, address(this), duration);
+        
+        // Set this contract as the (temporary) owner, giving it
+        // permission to set up the resolver.
+        expires = base.register(tokenId, address(this), duration);
 
-            // The nodehash of this label
-            bytes32 nodehash = keccak256(
-                abi.encodePacked(base.baseNode(), label)
-            );
+        // The nodehash of this label
+        bytes32 nodehash = keccak256(
+            abi.encodePacked(base.baseNode(), label)
+        );
 
-            // Set the resolver
-            base.qns().setResolver(nodehash, resolver);
+        // Set the resolver
+        base.qns().setResolver(nodehash, resolver);
 
-            // Configure the resolver
-            if (addr != address(0)) {
-                Resolver(resolver).setAddr(nodehash, addr);
-            }
-
-            // Now transfer full ownership to the expeceted owner
-            base.reclaim(tokenId, owner);
-            base.transferFrom(address(this), owner, tokenId);
+        // Configure the resolver
+        if (addr != address(0)) {
+            Resolver(resolver).setAddr(nodehash, addr);
         }
+
+        // Now transfer full ownership to the expeceted owner
+        base.reclaim(tokenId, owner);
+        base.transferFrom(address(this), owner, tokenId);
 
         emit NameRegistered(name, label, owner, cost, expires);
 
