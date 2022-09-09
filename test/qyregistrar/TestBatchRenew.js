@@ -7,6 +7,7 @@ const BatchRenew = artifacts.require('./BatchRenew')
 const namehash = require('eth-ens-namehash')
 const sha3 = require('web3-utils').sha3
 const toBN = require('web3-utils').toBN
+const toWei = require('web3-utils').toWei
 const { exceptions } = require('../test-utils')
 
 const QY_LABEL = sha3('qy')
@@ -70,9 +71,9 @@ contract('BatchRenew', function(accounts) {
     }
   })
 
-  it('should return default rentPrice 1000', async () => {
-    assert.equal(await controller._rentPrice(), 1000)
-  })
+//   it('should return default rentPrice 1000', async () => {
+//     assert.equal(await controller._rentPrice(), 1000)
+//   })
 
   it('should return default rentPrice 1000', async () => {
     let x = await batchRenew.rentPrice(["xxx"], 0)
@@ -82,8 +83,8 @@ contract('BatchRenew', function(accounts) {
 
   it('should return the cost of a bulk renewal', async () => {
     assert.equal(
-      await batchRenew.rentPrice(['test1', 'test2'], 86400),
-      2000
+      (await batchRenew.rentPrice(['test1', 'test2'], 86400)).toString(),
+      toBN(toWei('2', 'ether')).toString()
     )
   })
 
@@ -94,7 +95,7 @@ contract('BatchRenew', function(accounts) {
   it('should permit bulk renewal of names', async () => {
     const oldExpiry = await baseRegistrar.nameExpires(sha3('test2'))
     const tx = await batchRenew.renewAll(['test1', 'test2'], 86400, {
-      value: 86401 * 2,
+      value: toWei('2', 'ether'),
     })
     assert.equal(tx.receipt.status, true)
     const newExpiry = await baseRegistrar.nameExpires(sha3('test2'))

@@ -26,49 +26,45 @@ function mysleep(ms) {
     return new Promise(resolve => setTimeout(() =>resolve(), ms));
 };
 
-async function registerName( controller , name, owner,
-    txOptions = { value: BUFFERED_REGISTRATION_COST }
-) {
-    var tx = await controller.register(
-        name,
-        owner,
-        REGISTRATION_TIME,
-        txOptions
-    )
-
-    return tx
-}
-
-
 
 async function main() {
 
     // QYRegistrarController deployed contract address
-    let registrarControllerAddr = "0x3d1D3B7c5B87a283425964665536acd0d2298570"
+    let registrarControllerAddr = "0xEe63C92aC8793dA96AA44007147F3bA25D1c6F6d"
     let controller = await ethers.getContractAt("QYRegistrarController", registrarControllerAddr)
 
     let signers = await ethers.getSigners()
-    let ownerAccount = await signers[0].getAddress()
+    let owner = await signers[0].getAddress()
 
-    let label = "yqq"
-    let ok = await controller.available(label)
-    if( !ok ) {
-        console.log("😱 This is label ", label, " is already be registed.")
-        return
+    let labels = ["y", "yq", "yqq", "yqqq", "yqqqq", "yqqqqq", "yqqqqqq"]
+    // let labels = ["w"]
+
+    for(let i = 0; i < labels.length; i++) {
+        let label = labels[i]
+        let ok = await controller.available(label)
+        if( !ok ) {
+            console.log("😱 This is label ", label, " is already be registed.")
+            continue
+        }
+
+        let rentPrice  = controller.rentPrice(label, REGISTRATION_TIME)
+        var tx = await controller.register(
+            label,
+            owner,
+            REGISTRATION_TIME,
+            {value: rentPrice}
+        )
+
+        // console.log(await tx)
+        // console.log(await tx.wait())
+        let txReceipt = await tx.wait()
+        if(1 == txReceipt.status ) {
+            console.log("✅ register ", label , " successfully")
+        } else {
+            console.log("😱 register ", label , " failed")
+        }
+        console.log("register name ", label, " tx hash is : ", tx.hash)
     }
-
-    let tx = await registerName(controller, label, ownerAccount)
-    if(1 == (await tx.wait().status) ) {
-        console.log("✅ register ", "."+label, " successfully")
-    } else {
-        console.log("😱 register ", "."+label, " failed")
-
-        // const trace = await provider.send("debug_traceTransaction", [
-        //     "0xcf63f210f9ad0d46246415b4c7c7ba1cbabf34e6d1393d59781e40e74c3a6971"
-        // ])
-        // console.log(trace)
-    }
-    console.log("register name tx hash is : ", tx.hash)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

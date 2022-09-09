@@ -5,14 +5,16 @@ import "./BaseRegistrarImplementation.sol";
 import "../utils/StringUtils.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../resolvers/Resolver.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 /**
  * @dev A registrar controller for registering and renewing names at fixed cost.
  */
 contract QYRegistrarController is Ownable {
     using StringUtils for *;
+    using SafeMath for uint256;
 
-    uint256 public _rentPrice  = 1000 wei;
+    uint256 private _baseRentPrice  = 1 ether;
 
     uint256 public constant MIN_REGISTRATION_DURATION = 28 days;
 
@@ -31,6 +33,9 @@ contract QYRegistrarController is Ownable {
     address public defaultResolver;
 
     mapping(bytes32 => uint256) public commitments;
+
+    bool isPublicRegister = true;
+    mapping(address => bool) managers;
 
     event NameRegistered(
         string name,
@@ -55,18 +60,30 @@ contract QYRegistrarController is Ownable {
         require(defaultResolver != address(0), "default resolve must be publicresolver");
     }
 
-    function check(string memory name) public pure returns (bool) {
-        bytes memory namebytes = bytes(name);
-
-        for (uint256 i; i < namebytes.length; i++) {
-            if (!exists(bytes1(namebytes[i]))) return false;
+    modifier onlyManager() {
+        if (!isPublicRegister) {
+            require(owner() == msg.sender || managers[msg.sender], "caller is not the manager");
         }
-        return true;
+        _;
     }
 
-    function setRentPrice(uint256 _price) public onlyOwner {
-        require(_price > 0, "price must greater than 0");
-        _rentPrice = _price;
+    function setPublicRegister(bool status) public onlyOwner{
+        isPublicRegister = status;
+    }
+
+    function addManager(address addr_) public onlyOwner {
+        managers[addr_] = true;
+    }
+
+    function removeManager(address addr_) public onlyOwner {
+        if (managers[addr_]) {
+            delete managers[addr_];
+        }
+    }
+
+    function setBaseRentPrice(uint256 _basePrice) public onlyOwner {
+        require(_basePrice > 0, "_basePrice must greater than 0");
+        _baseRentPrice = _basePrice;
     }
 
     function rentPrice(string memory name_, uint256 duration_)
@@ -74,7 +91,20 @@ contract QYRegistrarController is Ownable {
         view
         returns (uint256)
     {
-        return _rentPrice;
+        uint256 len = name_.strlen();
+        if (len == 1 && duration_ >= MIN_REGISTRATION_DURATION) {
+            return _baseRentPrice.mul(1000); // 1000 * baseRentPrice
+        }
+        return _baseRentPrice;
+    }
+
+    function check(string memory name) public pure returns (bool) {
+        bytes memory namebytes = bytes(name);
+
+        for (uint256 i; i < namebytes.length; i++) {
+            if (!exists(bytes1(namebytes[i]))) return false;
+        }
+        return true;
     }
 
     function valid(string memory name) public pure returns (bool) {
@@ -101,7 +131,7 @@ contract QYRegistrarController is Ownable {
         string memory name,
         address owner,
         uint256 duration
-    ) external payable {
+    ) external payable onlyManager  {
         require(owner != address(0), "owner must not be 0");
 
         // set defaultResolver as default resolver
@@ -118,7 +148,7 @@ contract QYRegistrarController is Ownable {
         uint256 tokenId = uint256(label);
 
         uint256 expires;
-        
+
         // Set this contract as the (temporary) owner, giving it
         // permission to set up the resolver.
         expires = base.register(tokenId, address(this), duration);

@@ -20,7 +20,7 @@ remix:
 
 
 
-deploy-testchain:
+deploy-testchain: compile
 	npx hardhat run scripts/testchain-deploy.js --network testchain
 
 
