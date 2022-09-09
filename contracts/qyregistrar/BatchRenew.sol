@@ -9,7 +9,7 @@ import "../resolvers/Resolver.sol";
 
 contract BatchRenew {
     bytes32 constant private QY_NAMEHASH = 0x89f9fa7dfb2063d526ebb3ca370e91a9a03cb631cf6aef2d77a9f61a2c1788fb;
-    bytes4 constant private REGISTRAR_CONTROLLER_ID = 0x018fac06;
+    bytes4 constant private REGISTRAR_CONTROLLER_ID = 0x523d5854;
     bytes4 constant private INTERFACE_META_ID = bytes4(keccak256("supportsInterface(bytes4)"));
     bytes4 constant public BULK_RENEWAL_ID = bytes4(
         keccak256("rentPrice(string[],uint)") ^

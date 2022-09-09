@@ -61,8 +61,8 @@ contract('BatchRenew', function(accounts) {
       resolver.address,
       0
     )
-    // 0x018fac06 is COMMITMENT_CONTROLLER_ID
-    await resolver.setInterface(QY_NAMEHASH, '0x018fac06', controller.address)
+    // 0x523d5854 is CONTROLLER_ID in QYRegistrarController.sol
+    await resolver.setInterface(QY_NAMEHASH, '0x523d5854', controller.address)
     await qns.setOwner(QY_NAMEHASH, baseRegistrar.address)
 
     // Register some names
