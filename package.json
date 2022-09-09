@@ -36,7 +36,7 @@
     "elliptic-solidity": "^1.0.0",
     "ethereum-waffle": "^3.3.0",
     "ethers": "^5.6.1",
-    "hardhat": "^2.9.9",
+    "hardhat": "^2.11.1",
     "hardhat-abi-exporter": "^2.9.0",
     "hardhat-deploy": "^0.11.10",
     "hardhat-gas-reporter": "^1.0.4",

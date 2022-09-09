@@ -15,12 +15,12 @@ const toWei = require('web3-utils').toWei
 
 const DAYS = 24 * 60 * 60
 const REGISTRATION_TIME = 28 * DAYS
-const BUFFERED_REGISTRATION_COST = 1000;//REGISTRATION_TIME + 3 * DAYS
+const BUFFERED_REGISTRATION_COST = toWei('1', 'ether');//REGISTRATION_TIME + 3 * DAYS
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 const EMPTY_BYTES =
   '0x0000000000000000000000000000000000000000000000000000000000000000'
 
-const COST = 1000
+const COST = BUFFERED_REGISTRATION_COST
 
 contract('QYRegistrarController', function() {
   let qns
@@ -156,8 +156,8 @@ contract('QYRegistrarController', function() {
       )
 
     expect(
-      (await web3.eth.getBalance(controller.address)) - balanceBefore
-    ).to.equal(COST)
+      ((await web3.eth.getBalance(controller.address)) - balanceBefore).toString()
+    ).to.equal( COST)
   })
 
   it('should revert when not enough ether is transferred', async () => {
@@ -194,7 +194,7 @@ contract('QYRegistrarController', function() {
       )
 
     expect(
-      (await web3.eth.getBalance(controller.address)) - balanceBefore
+      ((await web3.eth.getBalance(controller.address)) - balanceBefore).toString()
     ).to.equal(COST)
 
     var nodehash = namehash.hash('newconfigname.qy')
@@ -230,7 +230,7 @@ contract('QYRegistrarController', function() {
     expect(await qns.resolver(nodehash)).to.equal(resolver.address)
     expect(await resolver['addr(bytes32)'](nodehash)).to.equal(registrantAccount)
     expect(
-        (await web3.eth.getBalance(controller.address)) - balanceBefore
+        ((await web3.eth.getBalance(controller.address)) - balanceBefore).toString()
       ).to.equal(COST)
   })
 
@@ -260,7 +260,7 @@ contract('QYRegistrarController', function() {
     var newExpires = await baseRegistrar.nameExpires(sha3('newname'))
     expect(newExpires.toNumber() - expires.toNumber()).to.equal(86400)
     expect(
-      (await web3.eth.getBalance(controller.address)) - balanceBefore
+      ((await web3.eth.getBalance(controller.address)) - balanceBefore).toString()
     ).to.equal(COST)
   })
 
