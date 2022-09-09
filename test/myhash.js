@@ -15,16 +15,14 @@ console.log(ethhash)
 // 0x89f9fa7dfb2063d526ebb3ca370e91a9a03cb631cf6aef2d77a9f61a2c1788fb
 
 
-// calculate  COMMITMENT_CONTROLLER_ID in /qyregistrar/QYRegistrarController.sol
+// calculate  CONTROLLER_ID in /qyregistrar/QYRegistrarController.sol
 controller_id = toBN(keccak256("rentPrice(string,uint256)"))
     .xor(toBN(keccak256("available(string)")))
-    .xor(toBN(keccak256("makeCommitment(string,address,bytes32)")))
-    .xor(toBN(keccak256("commit(bytes32)")))
-    .xor(toBN(keccak256("register(string,address,uint256,bytes32)")))
+    .xor(toBN(keccak256("register(string,address,uint256)")))
     .xor(toBN(keccak256("renew(string,uint256)")))
     .toString("hex", 64)
-console.log( "0x" + controller_id.substring(0, 8)) // 0x018fac06
-
+console.log( "0x" + controller_id.substring(0, 8))
+// 0x523d5854
 
 
 bnbhash = namehash.hash('bnb')
