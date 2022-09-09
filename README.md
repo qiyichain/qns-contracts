@@ -1,8 +1,8 @@
 # QNS
 
-**QNS(Qiyichain Name Service) is fork of QNS.**
+Qiyichain Name Service
 
-For documentation of the QNS system, see https://qns.qiyichain.com.
+For documentation of the QNS system, see https://qns.qiyichain.com/docs.
 
 ## npm package
 
