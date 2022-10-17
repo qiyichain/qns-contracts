@@ -34,7 +34,7 @@
 
 ---
 
-## QNS 交互流程说明
+## QNS 合约地址（测试链）
 
 <!-- 运行 `script/testchain-deploy.js` 执行部署 -->
 
@@ -48,7 +48,11 @@
 - `QYRegistrarController`: [0x6aaf1274fEa4B4e849B21681e4871312eD8C8E0D](https://explorer-test.rarefy.vip/address/0x6aaf1274fEa4B4e849B21681e4871312eD8C8E0D)
 
 
-### 注册流程测试
+## QNS流程说明
+
+以QNS域名`yqq.qy`进行示范
+
+### 注册
 
 > 参考js示例: [registername.js](../scripts/registername.js)
 
