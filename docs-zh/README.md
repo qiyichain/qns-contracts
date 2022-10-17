@@ -41,11 +41,11 @@
 <!-- `npx hardhat run scripts/testchain-deploy.js --network testchain` -->
 测试链上，已经部署的合约地址(2022-10-17)
 
-- QNSRegistry: [0xf48E2c84971C3B7C0ca844117A9499161e601A06](https://explorer-test.rarefy.vip/address/0xf48E2c84971C3B7C0ca844117A9499161e601A06)
-- BaseRegistrarImplementation: [0x32299736326D3aC86da1de620fd15f2Dc390bbAD](https://explorer-test.rarefy.vip/address/0x32299736326D3aC86da1de620fd15f2Dc390bbAD)
-- PublicResolver: [0x70DD1D4c6a39076398DF59442f9403bf92aC99D0](https://explorer-test.rarefy.vip/address/0x70DD1D4c6a39076398DF59442f9403bf92aC99D0)
-- ReverseRegistrar: [0xD5A8142F09ba251837cAD35ccEF38BD363986636](https://explorer-test.rarefy.vip/address/0xD5A8142F09ba251837cAD35ccEF38BD363986636)
-- QYRegistrarController: [0x6aaf1274fEa4B4e849B21681e4871312eD8C8E0D](https://explorer-test.rarefy.vip/address/0x6aaf1274fEa4B4e849B21681e4871312eD8C8E0D)
+- `QNSRegistry`: [0xf48E2c84971C3B7C0ca844117A9499161e601A06](https://explorer-test.rarefy.vip/address/0xf48E2c84971C3B7C0ca844117A9499161e601A06)
+- `BaseRegistrarImplementation`: [0x32299736326D3aC86da1de620fd15f2Dc390bbAD](https://explorer-test.rarefy.vip/address/0x32299736326D3aC86da1de620fd15f2Dc390bbAD)
+- `PublicResolver`: [0x70DD1D4c6a39076398DF59442f9403bf92aC99D0](https://explorer-test.rarefy.vip/address/0x70DD1D4c6a39076398DF59442f9403bf92aC99D0)
+- `ReverseRegistrar`: [0xD5A8142F09ba251837cAD35ccEF38BD363986636](https://explorer-test.rarefy.vip/address/0xD5A8142F09ba251837cAD35ccEF38BD363986636)
+- `QYRegistrarController`: [0x6aaf1274fEa4B4e849B21681e4871312eD8C8E0D](https://explorer-test.rarefy.vip/address/0x6aaf1274fEa4B4e849B21681e4871312eD8C8E0D)
 
 
 ### 注册流程测试
@@ -79,29 +79,26 @@
 > 完整的[javascript代码实现](../scripts/transfername.js)
 
 
-- 1、调用BaseRegistrarImplementation的 transferFrom 函数，转移qns域名
+- 1、调用 `BaseRegistrarImplementation` 的 `transferFrom` 函数，转移qns域名
 
     >示例交易： https://explorer-test.rarefy.vip/tx/0xf76da28576f787d5d58f9b96e183c473cfefc16a2124b9f58f2db64b4892d165
 
 
-- 2、调用BaseRegistrarImplementation的reclaim函数，重新声明owner
+- 2、调用 `BaseRegistrarImplementation` 的 `reclaim` 函数，重新声明`owner`
 
     >示例交易： https://explorer-test.rarefy.vip/tx/0xc2b31319dc7b3e3dfe5c6d34f0147051c04ad04d7a66fb59055b203f179b650b
 
-    最后需要设置解析地址，交互合约：PublicResolver.sol
 
-- 3、调用PublicResolver的setAddr函数, 重新设置（可理解为“绑定”）新的地址
+- 3、调用 `PublicResolver` 的 `setAddr` 函数, 重新设置（可理解为“绑定”）新的地址
 
     >示例交易： https://explorer-test.rarefy.vip/tx/0x6b064742baec08e9c47aeafbc357358c8dc03a3310e8dac6580290db7d402192
 
-    其中node是  namehash.hash('yqq.qy')
-    addr是新地址
 
-- 4、调用PublicResolver的addr函数， 获取转移后qns域名最新的解析结果
+- 4、调用`PublicResolver`的`addr`函数， 获取转移后qns域名最新的解析结果
 
 
 
-以下是核心逻辑代码
+以下是核心逻辑代码, 完整的js代码在[这里](../scripts/transfername.js)
 
 ```js
 let label = "yqq"
