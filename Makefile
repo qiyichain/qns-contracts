@@ -27,10 +27,15 @@ deploy-testchain: compile
 registername:
 	npx hardhat run scripts/registername.js --network testchain
 
+transfername:
+	npx hardhat run scripts/transfername.js --network testchain
+
+resolvename:
+	npx hardhat run scripts/resolve.js --network testchain
 
 flatten:
-	npx hardhat flatten ./contracts/qyregistrar/BaseRegistrarImplementation.sol  > ./tmp/BaseRegistrarImplementation.sol
-	npx hardhat flatten ./contracts/registry/QNSRegistry.sol  > ./tmp/QNSRegistry.sol
-	npx hardhat flatten ./contracts/resolvers/PublicResolver.sol  > ./tmp/PublicResolver.sol
-	npx hardhat flatten ./contracts/registry/ReverseRegistrar.sol  > ./tmp/ReverseRegistrar.sol
-	npx hardhat flatten ./contracts/qyregistrar/QYRegistrarController.sol  > ./tmp/QYRegistrarController.sol
+	npx hardhat flatten ./contracts/qyregistrar/BaseRegistrarImplementation.sol  > ./flattened/BaseRegistrarImplementation.sol
+	npx hardhat flatten ./contracts/registry/QNSRegistry.sol  > ./flattened/QNSRegistry.sol
+	npx hardhat flatten ./contracts/resolvers/PublicResolver.sol  > ./flattened/PublicResolver.sol
+	npx hardhat flatten ./contracts/registry/ReverseRegistrar.sol  > ./flattened/ReverseRegistrar.sol
+	npx hardhat flatten ./contracts/qyregistrar/QYRegistrarController.sol  > ./flattened/QYRegistrarController.sol

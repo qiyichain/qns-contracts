@@ -39,40 +39,38 @@ hello2022.qy （合法）
 `npx hardhat run scripts/testchain-deploy.js --network testchain`
 
 ```
-QNSRegistry: 0x67F86793CFc82A1126F80aaB4937fC4460145c6F
-BaseRegistrarImplementation: 0x6Da38Cb5E5C7737ed0f8C4597e9262514201fc94
-PublicResolver: 0xcbFa39d03C9514E35043AaDd61DFaDBdfAE763F9
-ReverseRegistrar: 0x66Ff92D9f52D1e5605AA29572A809b751e7Cd33d
-QYRegistrarController: 0xd451741Bfc077896B2dC511D75F27DDE092AA53c
+QNSRegistry: 0xf48E2c84971C3B7C0ca844117A9499161e601A06
+BaseRegistrarImplementation: 0x32299736326D3aC86da1de620fd15f2Dc390bbAD
+PublicResolver: 0x70DD1D4c6a39076398DF59442f9403bf92aC99D0
+ReverseRegistrar: 0xD5A8142F09ba251837cAD35ccEF38BD363986636
+QYRegistrarController: 0x6aaf1274fEa4B4e849B21681e4871312eD8C8E0D
 ```
 
 
 # 注册流程测试
 
-1.注册`yqq.qy`（调用`QYRegistrarController.registe`注册默认会）
+1.注册`yqq.qy`（调用`QYRegistrarController.register`注册默认会）
 
-https://explorer-test.rarefy.vip/tx/0x2153ff35d9951fbb5aa260f1cde509ddcde58132e2332e11d2b57504ce11663b
+https://explorer-test.rarefy.vip/tx/0x1a579a48e3dfbbb7c767f0cc6908e09da3ac1b0baecbcdfeafdd8e98b9c81795
 
-交互合约:`QYRegistrarController`，包含了`commit-reveal`
 
-```
-1.makeCommitment
-2.commit
-3.register，需要转1000wei，作为购买域名的消耗。register会自动设置PublicResolver为解析器，默认将域名解析到owner地址
+调用`QYRegistrarController`的 `register`，需要转`1 QYC`，作为购买域名的消耗。`register`函数会自动设置PublicResolver为解析器，默认将域名解析到owner地址
 
-```
+最短注册时间`28`天
+
+参考js示例: [registername.js](../scripts/registername.js)
+
+## 解析域名
+
+调用`PublicResolver`的 `addr(bytes32)`函数，其中参数是`namehash.hash(yqq.qy`
+
+
+参考js示例: [resolvename.js](../scripts/resolvename.js)
 
 
 ## 重新解析新的地址
 
-交互合约:PublicResolver.sol
-
-```
-setAddr(node, addr)
-
-其中node是  namehash.hash('yqq.qy')
-addr是新地址
-```
+调用`PublicResolver` 的`setAddr(node, addr)`, 其中node是`namehash.hash('yqq.qy')`, addr是新地址
 
 
 ## 域名转移和重新解析
@@ -81,31 +79,56 @@ addr是新地址
 
 类似ERC721的转移操作：
 
-- 1.approve(to, tokenId)
+- 1、调用BaseRegistrarImplementation的 transferFrom 函数，转移qns域名
 
-to：授权给新的地址
-tokenId： 是keccak256("yqq")，而不是 namehash("yqq.qy")
-
-> https://explorer-test.rarefy.vip/tx/0xb40e9f8a7b19806dc92b4c8aa10e7a425bf9e1b4802c6c6d5a708927d3318ae4
-
-- 2.transferFrom
-
-    > https://explorer-test.rarefy.vip/tx/0x46e320dfac332cef0a094c7640c8360d73019303bb3086bd078923448c9958ef
+https://explorer-test.rarefy.vip/tx/0xf76da28576f787d5d58f9b96e183c473cfefc16a2124b9f58f2db64b4892d165
 
 
-- 3.reclaim 重新声明owner的地址
+- 2、调用BaseRegistrarImplementation的reclaim函数，重新声明owner
 
-    > https://explorer-test.rarefy.vip/tx/0xbb87624591b095031800840264be20f64e67a9b2c93644aeabae0870da83207f
+https://explorer-test.rarefy.vip/tx/0xc2b31319dc7b3e3dfe5c6d34f0147051c04ad04d7a66fb59055b203f179b650b
 
 最后需要设置解析地址，交互合约：PublicResolver.sol
 
-- 4.setAddr(node, addr)
+- 3、调用PublicResolver的setAddr函数, 重新设置（可理解为“绑定”）新的地址
 
-    > https://explorer-test.rarefy.vip/tx/0x863c99450544e4f1be70f0f5fdcd0b5ac6a8f2f06c1f93d71cd27c9597a9bbd1
+https://explorer-test.rarefy.vip/tx/0x6b064742baec08e9c47aeafbc357358c8dc03a3310e8dac6580290db7d402192
 
 其中node是  namehash.hash('yqq.qy')
 addr是新地址
 
+- 4、调用PublicResolver的addr函数， 获取转移后qns域名最新的解析结果
+
+
+完整的[js代码实现](../scripts/transfername.js)
+
+以下是核心逻辑代码
+
+```js
+let label = "yqq"
+let name = "yqq.qy"
+
+// 1、调用BaseRegistrarImplementation的 transferFrom 函数，转移qns域名
+await baseRegistrar.connect(registrantAccount).transferFrom(registrantAddress, otherAddress, sha3(label) )
+console.log("token owner:" + await baseRegistrar.ownerOf(sha3(label)) )
+
+await mysleep(3000)
+
+// 2、调用BaseRegistrarImplementation的reclaim函数，重新声明owner
+await baseRegistrar.connect(otherAccount).reclaim(sha3(label), otherAddress );
+await mysleep(3000)
+console.log("qns name owner:" + await qns.owner(namehash.hash(name)) )
+console.log("token owner:" + await baseRegistrar.ownerOf(sha3(label)) )
+let node = namehash.hash(name)
+
+// 3、调用PublicResolver的setAddr函数, 重新设置（可理解为“绑定”）新的地址
+let tx = await resolver.connect(otherAccount).functions['setAddr(bytes32,address)'](node, otherAddress)
+await tx.wait()
+
+// 4、调用PublicResolver的addr函数， 获取转移后qns域名最新的解析结果
+await mysleep(6000)
+console.log(await (resolver.functions['addr(bytes32)'](node)))
+```
 
 
 ## 反向解析

@@ -30,14 +30,14 @@ function mysleep(ms) {
 async function main() {
 
     // QYRegistrarController deployed contract address
-    let registrarControllerAddr = "0xEe63C92aC8793dA96AA44007147F3bA25D1c6F6d"
+    let registrarControllerAddr = "0x6aaf1274fEa4B4e849B21681e4871312eD8C8E0D"
     let controller = await ethers.getContractAt("QYRegistrarController", registrarControllerAddr)
 
     let signers = await ethers.getSigners()
     let owner = await signers[0].getAddress()
 
-    let labels = ["y", "yq", "yqq", "yqqq", "yqqqq", "yqqqqq", "yqqqqqq"]
-    // let labels = ["w"]
+    // let labels = ["y", "yq", "yqq", "yqqq", "yqqqq", "yqqqqq", "yqqqqqq"]
+    let labels = ["yqq"]
 
     for(let i = 0; i < labels.length; i++) {
         let label = labels[i]
