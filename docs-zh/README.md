@@ -131,7 +131,7 @@ console.log(await (resolver.functions['addr(bytes32)'](node)))
 ```
 
 
-### 反向解析
+### (可选)反向解析
 
 
 交互合约：ReverseRegistrar.sol
