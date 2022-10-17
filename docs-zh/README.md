@@ -56,13 +56,13 @@
 
 > 参考js示例: [registername.js](../scripts/registername.js)
 
-- 注册`yqq.qy`（调用`QYRegistrarController.register`注册默认会）
+注意：注册QNS域名的最小租期是`28`天
 
-- 示例交易：https://explorer-test.rarefy.vip/tx/0x1a579a48e3dfbbb7c767f0cc6908e09da3ac1b0baecbcdfeafdd8e98b9c81795
+调用`QYRegistrarController`合约的`register`注册`yqq.qy`。
+    
+> 注意：需要转`1 QYC`，作为购买域名的消耗。`register`函数会自动设置`PublicResolver`为解析器，默认将域名解析到`owner`地址，不需要额外进行解析。
 
-- 调用`QYRegistrarController`的 `register`，需要转`1 QYC`，作为购买域名的消耗。`register`函数会自动设置PublicResolver为解析器，默认将域名解析到owner地址
-
-- 最短注册时间`28`天
+示例交易：https://explorer-test.rarefy.vip/tx/0x1a579a48e3dfbbb7c767f0cc6908e09da3ac1b0baecbcdfeafdd8e98b9c81795
 
 
 
