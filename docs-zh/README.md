@@ -39,11 +39,11 @@ hello2022.qy （合法）
 `npx hardhat run scripts/testchain-deploy.js --network testchain`
 
 ```
-QNSRegistry: 0x64770701F57Be408A58e48b48497d2171b1565F9
-BaseRegistrarImplementation: 0xd5677159d620c7d870AacC486Ae04c23A3cFd71B
-PublicResolver: 0x02BDA5D2D6810B18033C1c9516A2Ef5A0f84934f
-ReverseRegistrar: 0xBC7F9Cf0c3e5d134144800Ef4041A2D02E1050aE
-QYRegistrarController: 0xEe63C92aC8793dA96AA44007147F3bA25D1c6F6d
+QNSRegistry: 0x67F86793CFc82A1126F80aaB4937fC4460145c6F
+BaseRegistrarImplementation: 0x6Da38Cb5E5C7737ed0f8C4597e9262514201fc94
+PublicResolver: 0xcbFa39d03C9514E35043AaDd61DFaDBdfAE763F9
+ReverseRegistrar: 0x66Ff92D9f52D1e5605AA29572A809b751e7Cd33d
+QYRegistrarController: 0xd451741Bfc077896B2dC511D75F27DDE092AA53c
 ```
 
 
@@ -128,3 +128,12 @@ name(node)
 其中node是: `namehash.hash(myaddress.slice(2).toLowerCase() + '.addr.reverse')`
 myaddress: 是 '0x'开头的地址字符串,
 ```
+
+
+## SDK支持
+
+- Java SDK: [需要修改web3j关于ENS部分代码](https://github.com/qiyichain/web3j)
+- Javascript SDK: [需要修改web3.js关于ENS的代码](https://github.com/qiyichain/web3.js/)
+- Python SDK [需要修改web3.py关于ENS的代码](https://github.com/qiyichain/web3.py/)
+- 其他SDK暂时不修改
+

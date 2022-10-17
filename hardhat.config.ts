@@ -138,7 +138,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       // Required for real DNS record tests
-      initialDate: '2019-03-15T14:06:45.000+13:00',
+      initialDate: '2022-10-17T10:50:45.000+08:00',
       saveDeployments: false,
       tags: ['test', 'legacy', 'use_root'],
     },
@@ -148,7 +148,7 @@ const config: HardhatUserConfig = {
       tags: ['test', 'legacy', 'use_root'],
     },
     testchain: {
-      url: `http://172.16.100.104:8545`,
+      url: `http://172.16.100.71:8545`,
       tags: ['test', 'legacy', 'use_root'],
       chainId: 12285,
       accounts: real_accounts,
