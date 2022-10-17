@@ -64,7 +64,7 @@
 
 ### 解析域名
 
-- 调用`PublicResolver`的 `addr(bytes32)`函数，其中参数是`namehash.hash(yqq.qy`
+- 调用`PublicResolver`的 `addr(bytes32)`函数，其中参数是`namehash.hash('yqq.qy')`
 
 > 参考js示例: [resolvename.js](../scripts/resolvename.js)
 

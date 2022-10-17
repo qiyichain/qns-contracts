@@ -36,7 +36,7 @@ async function main() {
     let signers = await ethers.getSigners()
     let owner = await signers[0].getAddress()
 
-    let label = "yqq"
+    let label = "yqq.qy"
     let node = namehash.hash(label)
     let a = await resolver.functions['addr(bytes32)'](node)
     console.log('根据' + label +'解析结果为: ' + a)

@@ -31,7 +31,7 @@ transfername:
 	npx hardhat run scripts/transfername.js --network testchain
 
 resolvename:
-	npx hardhat run scripts/resolve.js --network testchain
+	npx hardhat run scripts/resolvename.js --network testchain
 
 flatten:
 	npx hardhat flatten ./contracts/qyregistrar/BaseRegistrarImplementation.sol  > ./flattened/BaseRegistrarImplementation.sol
